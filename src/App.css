@@ -2,6 +2,13 @@
   text-align: center;
 }
 
-#home {
-  background-color: purple;
+html, body {
+  margin: 0;
+  border: 1px solid red;
+  padding:   0;
+  background-color: #f4f5f8;
+}
+
+#dashboard {
+  background-color: rgb(159, 226, 255);
 }

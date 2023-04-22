@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Home from './screens/Home/homeindex.js';
+import Dashboard from './screens/Dashboard/dashboardindex.js';
+import Container from './components/container/container.js'
 import "./App.css";
-
 
 const App = () => (
     <div className='app'>
-        <Home />
+        <Dashboard />
+        <Container name="my container"/>
     </div>
 )
 
