@@ -12,6 +12,15 @@ const ToggleBar = () => (
         <div>
             <input type="checkbox" id="showitems"></input><label for="showitems"> Show Items</label>
         </div>
+        <div>
+            <button type="button">Insert Item</button>
+        </div>
+        <div>
+            <button type="button">Insert Containers</button>
+        </div>
+        <div>
+            <button type="button">Insert Shelf</button>
+        </div>
     </div>
 )
 
