@@ -60,14 +60,18 @@ const ToggleBar = () => (
 const Header = () => (
     <div id="header">
         <table>
-            <td id="left"><button type="button">Sign Out</button></td>
-            <td id="middle"><h1>Joe's Closet</h1></td>
-            <td id="right">
-                <div>
-                    <input type="text"></input>
-                    <button type="submit">Search</button>
-                </div>
-            </td>
+            <tbody>
+                <tr>
+                    <td id="left"><button type="button">Sign Out</button></td>
+                    <td id="middle"><h1>Joe's Closet</h1></td>
+                    <td id="right">
+                        <div>
+                            <input type="text"></input>
+                            <button type="submit">Search</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
         </table>
         <ToggleBar />
     </div>
