@@ -29,7 +29,7 @@ class Dashboard extends React.Component {
                         showingItems: false,
                         showingContainers: false,
                         showingShelves: false,
-                        showingDashboard: true
+                        showingDashboard: true,
                     };
     }
 
@@ -146,7 +146,7 @@ class Dashboard extends React.Component {
                     {this.state.showingShelves && <h1>Showing Shelves</h1>}
                     </div>
                     :
-                    <h1>HI</h1>
+                    <Container />
                 }
             </div>
         )

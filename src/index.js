@@ -8,7 +8,7 @@ class App extends React.Component {
   constructor() {
     super()
     // Constructor creates the loggedin state
-    this.state = {isLoggedIn: false}
+    this.state = {isLoggedIn: true}
   }
 
   render () {

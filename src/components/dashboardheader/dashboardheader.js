@@ -97,6 +97,8 @@ class DashboardHeader extends React.Component {
         this.state = {isInDashboard: true};
     }
 
+    
+
     render() {
         return (
             <div id="header">
