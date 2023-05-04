@@ -75,7 +75,7 @@ app.get("/api/username", (req, res) => {
 	const username = db.prepare(`
 		SELECT username
 		FROM users
-		WHERE id = (SELECT user_id FROM sessions WHERE token = ?)
+		WHERE user_id = (SELECT user_id FROM sessions WHERE token = ?)
 	`).pluck().get(token);
 	if (!username) {
 		res.status(401).json({ error: "Invalid token" });
@@ -131,6 +131,17 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 	res.send({
 		item_id: result.lastInsertRowid
 	});
+});
+
+
+app.post("/api/add-shelf", upload.none(), (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+
+	const { name, description } = req.body;
+
 });
 
 
