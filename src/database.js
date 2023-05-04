@@ -10,12 +10,11 @@ db.exec(`
     );
 
     CREATE TABLE IF NOT EXISTS closet (
-    CREATE TABLE IF NOT EXISTS closet (
         Cid           INTEGER PRIMARY KEY AUTOINCREMENT,
         name          TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS IF NOT EXISTS helf (
+    CREATE TABLE IF NOT EXISTS shelf (
         Sid           INTEGER PRIMARY KEY AUTOINCREMENT,
         size          INTEGER NOT NULL,
         material      TEXT NOT NULL,
