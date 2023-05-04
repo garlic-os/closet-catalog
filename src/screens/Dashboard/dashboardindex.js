@@ -15,7 +15,11 @@ class Dashboard extends React.Component {
         this.cancelAddContainer()
         this.addShelfDidMount()
         this.cancelAddShelf()
-        this.state = {isInsertingItem: false, isInsertingContainer: false, isInsertingShelf: false};
+        this.showingItemsDidMount()
+        this.showingContainersDidMount()
+        this.showingShelvesDidMount()
+        this.state = {isInsertingItem: false, isInsertingContainer: false, isInsertingShelf: false,
+                        showingItems: false, showingContainers: false, showingShelves: false};
     }
 
     // Adding and Canceling for Item
@@ -68,6 +72,27 @@ class Dashboard extends React.Component {
         );
     }
 
+    showingItemsDidMount() {
+        eventBus.on("showing items", (data) => {
+            this.setState(prevState => ({showingItems:!prevState.showingItems}));
+        }
+        );
+    }
+
+    showingContainersDidMount() {
+        eventBus.on("showing containers", (data) => {
+            this.setState(prevState => ({showingContainers:!prevState.showingContainers}));            
+        }
+        );
+    }
+
+    showingShelvesDidMount() {
+        eventBus.on("showing shelves", (data) => {
+            this.setState(prevState => ({showingShelves:!prevState.showingShelves}));
+        }
+        );
+    }
+
     render() {
         return (
             <div id="dashboard">
@@ -76,7 +101,9 @@ class Dashboard extends React.Component {
             {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && <AddContainerCard /> }
             {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && <AddShelfCard /> }
             <h1>Dashboard</h1>
-            
+            {this.state.showingItems && <h1>Showing Items</h1>}
+            {this.state.showingContainers && <h1>Showing Containers</h1>}
+            {this.state.showingShelves && <h1>Showing Shelves</h1>}
             </div>
         )
     }

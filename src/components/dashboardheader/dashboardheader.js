@@ -14,17 +14,27 @@ class ToggleBar extends React.Component {
         }
     }
 
+    handleToggle = (type) => {
+        if (type === "item") {
+            eventBus.dispatch("showing items", {message: "showing items"});
+        } else if (type === "container") {
+            eventBus.dispatch("showing containers", {message: "showing containers"});
+        } else if (type === "shelf") {
+            eventBus.dispatch("showing shelves", {message: "showing shelves"});
+        }
+    }
+
     render() {
         return (
             <div id="togglebar">
                 <div>
-                    <input type="checkbox" id="showcontainers"></input><b> Show Containers</b>
+                    <input type="checkbox" id="showitems" onChange={() => this.handleToggle("item")}></input><b> Show Items</b>
                 </div>
                 <div>
-                    <input type="checkbox" id="showshelves"></input><b> Show Shelves</b>
+                    <input type="checkbox" id="showcontainers" onChange={() => this.handleToggle("container")}></input><b> Show Containers</b>
                 </div>
                 <div>
-                    <input type="checkbox" id="showitems"></input><b> Show Items</b>
+                    <input type="checkbox" id="showshelves" onChange={() => this.handleToggle("shelf")}></input><b> Show Shelves</b>
                 </div>
                 <div>
                     <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
