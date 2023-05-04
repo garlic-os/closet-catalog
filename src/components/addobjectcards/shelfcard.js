@@ -1,6 +1,6 @@
 import React from 'react';
 import "./objectcardindex.css";
-import eventBus from '../../EventBus/eventbus';
+import eventBus from '../../EventBus/eventbus.js';
 
 function AddShelfCard() {
     const shelfAttributes = ['Name', 'Sid', 'Size', 'Material', 'Units', 'Value'];
