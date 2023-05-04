@@ -16,6 +16,7 @@ class App extends React.Component {
         });
 
         eventBus.on("logging out", () => {
+            localStorage.removeItem("token");
             this.setState({ isLoggedIn: false });
         });
     }
