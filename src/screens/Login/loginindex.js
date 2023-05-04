@@ -39,14 +39,14 @@ class  Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Login</h2>
                     <p>Please login or create an account.</p>
-                    <form>
+                    <form action="/login" method="POST">
                         <b>Username: </b>
-                        <input type="text" placeholder="Enter Username" id="uname" name="uname" required></input>
+                        <input type="text" placeholder="Enter Username" id="uname" name="username" required></input>
                         <br></br><br></br>
                         <b>Password: </b>
-                        <input type="password" placeholder="Enter Password" id="psw" name="psw" required></input>
+                        <input type="password" placeholder="Enter Password" id="psw" name="password" required></input>
                         <br></br><br></br>
-                        <button type="submit">Login</button>
+                        <input type="submit" value="Log in" />
                         <br></br><br></br>
                         <b>Don't have an Account? </b>
                         <button type="button" onClick={() => this.handleButtons()}>Create</button>
@@ -56,14 +56,14 @@ class  Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Create an Account</h2>
                     <p>Create an account with Closet Catalog</p>
-                    <form>
+                    <form action="/register" method="POST">
                         <b>Username: </b>
-                        <input type="text" placeholder="Enter Username" name="uname" required></input>
+                        <input type="text" placeholder="Enter Username" name="username" required></input>
                         <br></br><br></br>
                         <b>Password: </b>
-                        <input type="password" placeholder="Enter Password" name="psw" required></input>
+                        <input type="password" placeholder="Enter Password" name="password" required></input>
                         <br></br><br></br>
-                        <button type="submit">Create Account</button>
+                        <input type="submit" value="Create Account" />
                         <br></br><br></br>
                         <b>Already have an Account? </b>
                         <button type="button" onClick={() => this.handleButtons()}>Login</button>

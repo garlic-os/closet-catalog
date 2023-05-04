@@ -6,16 +6,16 @@ import "./App.css";
 
 class App extends React.Component {
   constructor() {
-    super()
+    super();
     // Constructor creates the loggedin state
-    this.state = {isLoggedIn: true}
+    this.state = { isLoggedIn: false };
   }
 
   render () {
     return (
       <div className='app'>
         {/* If the state is in login, display the dashboard, otherwise the login screen */}
-          {this.state.isLoggedIn? <Dashboard />:<Login />}
+          {this.state.isLoggedIn ? <Dashboard /> : <Login />}
       </div>
     )
     }
