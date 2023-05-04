@@ -134,13 +134,12 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 
 
 function validateToken(token) {
-	// const row = db.prepare(`
-	// 	SELECT user_id
-	// 	FROM sessions
-	// 	WHERE token = ?
-	// `).get(token);
-	// return row !== undefined;
-	return true;  // TODO: undo when login is implemented
+	const row = db.prepare(`
+		SELECT user_id
+		FROM sessions
+		WHERE token = ?
+	`).get(token);
+	return row !== undefined;
 }
 
 
