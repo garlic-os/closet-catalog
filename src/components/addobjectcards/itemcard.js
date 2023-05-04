@@ -12,14 +12,15 @@ import eventBus from '../../EventBus/eventbus';
  * @param {string} photoURL (default: NULL) URL to a photo of the item
  * @param {?number} expirationDate (UNIX timestamp); signifies the item is a Perishable type item if not null; default null
  */
-async function addItem(formdata) {
+async function addItem(event) {
+    event.preventDefault();  // Keep the page from reloading
     const response = await fetch("http://localhostL3001/api/add-item", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token")
         },
-        body: formdata
+        body: new FormData(event.target)
     });
     if (response.ok) {
         const data = response.json();
@@ -53,7 +54,7 @@ function AddItemCard () {
                     )
                 }
                 <button className="button" type="button" onClick={handleButton}>Cancel</button>
-                <button className="button" type="submit" onClick={() => document.querySelector("#itemform").submit()}>Add Item</button>
+                <input className="button" type="submit" value="Add Item" />
             </form>
 
         </div>            
