@@ -1,6 +1,7 @@
 import React from 'react';
 import "./objectcardindex.css";
-import eventBus from '../../EventBus/eventbus';
+import eventBus from '../../EventBus/eventbus.js';
+
 
 /**
  * Create an item and add it to a shelf or container.
