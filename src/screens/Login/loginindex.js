@@ -1,6 +1,7 @@
 import React from 'react';
 import "./login.css";
 import eventBus from '../../EventBus/eventbus.js';
+import * as config from "../../config.js";
 
 
 class Login extends React.Component {
@@ -9,14 +10,14 @@ class Login extends React.Component {
         super(props);
         
         // login is the first card you see when you visit the website
-        this.state = {isLogin: true};
+        this.state = { isLogin: true };
 
         // Necessary to make 'this' work in the callback
         this.handleButtons = this.handleButtons.bind(this);
     }
 
     handleButtons() {
-        this.setState(prevState => ({isLogin:!prevState.isLogin}));
+        this.setState(prevState => ({ isLogin: !prevState.isLogin }));
     }
 
     // John: The functionality of this component will have to altered a bit.
@@ -33,7 +34,7 @@ class Login extends React.Component {
     async handleLogin(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-        const response = await fetch('http://localhost:3001/api/login', {
+        const response = await fetch(`${config.url}/api/login`, {
             method: 'POST',
             body: data,
         });
@@ -50,7 +51,7 @@ class Login extends React.Component {
     async handleRegister(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-        const response = await fetch('http://localhost:3001/api/register', {
+        const response = await fetch(`${config.url}/api/register`, {
             method: 'POST',
             body: data,
         });

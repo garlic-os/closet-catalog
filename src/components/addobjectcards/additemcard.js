@@ -1,11 +1,12 @@
 import React from 'react';
 import "./objectcardindex.css";
 import eventBus from '../../EventBus/eventbus.js';
+import * as config from "../../config.js";
 
 
 async function addItem(event) {
     event.preventDefault();  // Keep the page from reloading
-    const response = await fetch("http://localhost:3001/api/add-item", {
+    const response = await fetch(`${config.url}/api/add-item`, {
         method: "POST",
         headers: {
             "Authorization": localStorage.getItem("token")

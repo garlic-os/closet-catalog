@@ -4,10 +4,11 @@ import multer from "multer";
 import cors from "cors";
 import crypto from "node:crypto";
 import bcrypt from "bcrypt";
+import * as config from "../config.js";
 import '../database.js';
 
 const app = express();
-const port = 3001;
+const port = config.port;
 const db = new Database("database.db");
 const upload = multer({ dest: "public/usercontent/" });
 
@@ -142,7 +143,23 @@ function validateToken(token) {
 	return row !== undefined;
 }
 
-
-app.listen(port, () => {
-	console.log(`Closet Catalog running on port ${port}`);
-});
+(async () => {
+	if (config.port === 443) {
+		console.log("Using HTTPS");
+		const fs = await import("fs/promises");
+		const https = await import("node:https");
+		https.createServer({
+			// Provide the private and public key to the server by reading each
+			// file's content with the readFileSync() method.
+			key: await fs.readFile(config.sslKeyPath),
+			cert: await fs.readFile(config.sslCertPath),
+		}, app)
+		.listen(config.port, () => {
+			console.log(`Closet Catalog running at ${config.url}`);
+		});
+	} else {
+		app.listen(port, () => {
+			console.log(`Closet Catalog running at ${config.url}`);
+		});
+	}
+})();
