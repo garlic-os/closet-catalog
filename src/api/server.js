@@ -2,6 +2,8 @@ import express from 'express';
 import Database from 'better-sqlite3';
 import multer from "multer";
 import cors from "cors";
+import crypto from "node:crypto";
+import bcrypt from "bcrypt";
 import '../database.js';
 
 const app = express();
@@ -14,31 +16,50 @@ app.use(express.static("public"));
 app.use(cors());
 
 
+// Create an account
+app.post("/api/register", express.json(), async (req, res) => {
+	const { username, password } = req.body;
+
+	// Check if username is already taken
+	const row = db.prepare(`
+		SELECT id
+		FROM users
+		WHERE username = ?
+	`).get(username);
+	if (row) {
+		res.status(409).json({ error: "Username already taken" });
+		return;
+	}
+
+	const stmt = db.prepare(`
+		INSERT INTO users (username, password_hash)
+		VALUES (?, ?)
+	`);
+	const info = stmt.run(username, await bcrypt.hash(password, 10));
+	res.send({ id: info.lastInsertRowid });
+});
+
+
 // Get a username and password combination from the database;
 // generate and return a session token if valid
-app.post("/api/login", express.json(), (req, res) => {
+app.post("/api/login", express.json(), async (req, res) => {
 	const { username, password } = req.body;
-	const stmt = db.prepare(`
+	const row = db.prepare(`
 		SELECT id, password_hash
 		FROM users
 		WHERE username = ?
-	`);
-	const row = stmt.get(username);
-	if (row) {
-		if (row.password_hash === password) {
-			const token = generateToken();
-			const stmt = db.prepare(`
-				INSERT INTO sessions (user_id, token)
-				VALUES (?, ?)
-			`);
-			stmt.run(row.id, token);
-			res.send({ token });
-		} else {
-			res.status(401).json({ error: "Invalid password" });
-		}
-	} else {
-		res.status(401).json({ error: "Invalid username" });
+	`).get(username);
+	if (!row || !(await bcrypt.compare(password, row.password_hash))) {
+		res.status(401).json({ error: "Invalid credentials" });
+		return;
 	}
+	const token = crypto.randomUUID();
+	const stmt = db.prepare(`
+		INSERT INTO sessions (user_id, token)
+		VALUES (?, ?)
+	`);
+	stmt.run(row.id, token);
+	res.send({ token });
 });
 
 
@@ -106,17 +127,6 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 		item_id: result.lastInsertRowid
 	});
 });
-
-
-const generateTokenChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_";
-const tokenLength = 32;
-function generateToken() {
-	let token = "";
-	for (let i = tokenLength; i > 0; --i) {
-		token += generateTokenChars[Math.floor(Math.random() * generateTokenChars.length)];
-	}
-	return token;
-}
 
 
 function validateToken(token) {
