@@ -20,6 +20,11 @@ app.use(cors());
 app.post("/api/register", express.json(), async (req, res) => {
 	const { username, password } = req.body;
 
+	if (username.length === 0) {
+		res.status(400).json({ error: "Username cannot be empty" });
+		return;
+	}
+
 	// Check if username is already taken
 	const row = db.prepare(`
 		SELECT id
@@ -36,7 +41,7 @@ app.post("/api/register", express.json(), async (req, res) => {
 		VALUES (?, ?)
 	`);
 	const info = stmt.run(username, await bcrypt.hash(password, 10));
-	res.send({ id: info.lastInsertRowid });
+	res.send({ user_id: info.lastInsertRowid });
 });
 
 
@@ -45,7 +50,7 @@ app.post("/api/register", express.json(), async (req, res) => {
 app.post("/api/login", express.json(), async (req, res) => {
 	const { username, password } = req.body;
 	const row = db.prepare(`
-		SELECT id, password_hash
+		SELECT user_id, password_hash
 		FROM users
 		WHERE username = ?
 	`).get(username);
@@ -58,7 +63,7 @@ app.post("/api/login", express.json(), async (req, res) => {
 		INSERT INTO sessions (user_id, token)
 		VALUES (?, ?)
 	`);
-	stmt.run(row.id, token);
+	stmt.run(row.user_id, token);
 	res.send({ token });
 });
 
@@ -66,17 +71,16 @@ app.post("/api/login", express.json(), async (req, res) => {
 // Get username by session token stored in Authorization header
 app.get("/api/username", (req, res) => {
 	const token = req.headers.authorization;
-	const stmt = db.prepare(`
+	const username = db.prepare(`
 		SELECT username
 		FROM users
 		WHERE id = (SELECT user_id FROM sessions WHERE token = ?)
-	`);
-	const row = stmt.get(token);
-	if (row) {
-		res.send(row.username);
-	} else {
+	`).pluck().get(token);
+	if (!username) {
 		res.status(401).json({ error: "Invalid token" });
+		return;
 	}
+	res.send(row.username);
 });
 
 

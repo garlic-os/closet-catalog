@@ -3,7 +3,7 @@ import "./login.css";
 import eventBus from '../../EventBus/eventbus';
 
 
-class  Login extends React.Component {
+class Login extends React.Component {
     // Used when creating the login screen
     constructor(props) {
         super(props);
@@ -29,6 +29,41 @@ class  Login extends React.Component {
         eventBus.dispatch("logging in", { message: "logging in"});
     }
 
+
+    async handleLogin(event) {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            body: data,
+        });
+        const body = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", body.token);
+            this.dispatchLoginEvent();
+        } else {
+            alert(body.error);
+        }
+    }
+
+
+    async handleRegister(event) {
+        event.preventDefault();
+        const data = new FormData(event.target);
+        const response = await fetch('/api/register', {
+            method: 'POST',
+            body: data,
+        });
+        const body = await response.json();
+        if (response.ok) {
+            localStorage.setItem("token", body.token);
+            this.dispatchLoginEvent();
+        } else {
+            alert(body.error);
+        }
+    }
+
+
     render() {
         return (
             <div id="login">
@@ -39,7 +74,7 @@ class  Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Login</h2>
                     <p>Please login or create an account.</p>
-                    <form action="/login" method="POST">
+                    <form onSubmit={this.handleLogin}>
                         <b>Username: </b>
                         <input type="text" placeholder="Enter Username" id="uname" name="username" required></input>
                         <br></br><br></br>
@@ -56,7 +91,7 @@ class  Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Create an Account</h2>
                     <p>Create an account with Closet Catalog</p>
-                    <form action="/register" method="POST">
+                    <form onSubmit={this.handleRegister}>
                         <b>Username: </b>
                         <input type="text" placeholder="Enter Username" name="username" required></input>
                         <br></br><br></br>
