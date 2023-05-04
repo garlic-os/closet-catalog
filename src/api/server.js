@@ -7,9 +7,10 @@ import '../database.js';
 const app = express();
 const port = 3001;
 const db = new Database("database.db");
-const upload = multer({ dest: "build/usercontent/" });
+const upload = multer({ dest: "public/usercontent/" });
 
 app.use(express.static("build"));
+app.use(express.static("public"));
 app.use(cors());
 
 
