@@ -27,7 +27,7 @@ app.post("/api/register", upload.none(), async (req, res) => {
 
 	// Check if username is already taken
 	const row = db.prepare(`
-		SELECT id
+		SELECT user_id
 		FROM users
 		WHERE username = ?
 	`).get(username);
