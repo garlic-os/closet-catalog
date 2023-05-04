@@ -3,22 +3,11 @@ import "./objectcardindex.css";
 import eventBus from '../../EventBus/eventbus.js';
 
 
-/**
- * Create an item and add it to a shelf or container.
- * Update the interface to display the new item’s information and picture.
- * @param {string} shelfOrContainerID
- * @param {string} itemTypeName - name of the item type
- * @param {number} initialCount (default: 1)
- * @param {string} description (default: NULL)
- * @param {string} photoURL (default: NULL) URL to a photo of the item
- * @param {?number} expirationDate (UNIX timestamp); signifies the item is a Perishable type item if not null; default null
- */
 async function addItem(event) {
     event.preventDefault();  // Keep the page from reloading
-    const response = await fetch("http://localhostL3001/api/add-item", {
+    const response = await fetch("http://localhost:3001/api/add-item", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
             "Authorization": localStorage.getItem("token")
         },
         body: new FormData(event.target)
@@ -32,7 +21,41 @@ async function addItem(event) {
 }
 
 function AddItemCard () {
-    const itemAttributes = {'Name': 'itemTypeName', 'Picture':'photoURL', 'Quantity': 'initialCount', 'Type':'itemTypeName', 'Expiration Date':'expirationDate'};
+    const items = [
+        {
+            name: "Name",
+            slug: "name",
+            type: "text"
+        },
+        {
+            name: "Picture",
+            slug: "photo",
+            type: "file"
+        },
+        {
+            name: "Quantity",
+            slug: "initialCount",
+            type: "number"
+        },
+        {
+            name: "Type",
+            slug: "itemTypeName",
+            type: "text"
+        },
+        {
+            name: "Expiration Date",
+            slug: "expirationDate",
+            type: "date"
+        }
+    ]
+
+    // TODO: get shelves and containers from database
+    let shelvesAndContainers = [
+        {
+            name: "Default Shelf",
+            id: 0
+        },
+    ];
 
     const handleButton = () => {
         eventBus.dispatch("cancel adding item", {message: "cancel adding item"});
@@ -45,19 +68,26 @@ function AddItemCard () {
             <p>Note: All attributes must be filled upon creation.</p>
             <form id="itemform" onSubmit={addItem}>
                 {
-                    Object.keys(itemAttributes).map((attribute) =>
+                    items.map(({ name, slug, type }) =>
                         <div key={count++}>
-                            <b>{attribute}: </b>
-                            <input name={itemAttributes[attribute]} type={attribute === 'Picture'? "file":"text"}></input>
-                            <br></br><br></br>
+                            <b>{name}: </b>
+                            <input name={slug} type={type}></input>
+                            <br/><br/>
                         </div>
                     )
                 }
+                <select>
+                    {
+                        shelvesAndContainers.map(({ name, id }) =>
+                            <option key={count++} value={id}>{name}</option>
+                        )
+                    }
+                </select>
+                <br/><br/>
                 <button className="button" type="button" onClick={handleButton}>Cancel</button>
                 <input className="button" type="submit" value="Add Item" />
             </form>
-
-        </div>            
+        </div>
     )
 }
 

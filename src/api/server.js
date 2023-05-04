@@ -1,18 +1,21 @@
 import express from 'express';
 import Database from 'better-sqlite3';
+import multer from "multer";
+import cors from "cors";
 import '../database.js';
 
 const app = express();
 const port = 3001;
 const db = new Database("database.db");
+const upload = multer({ dest: "build/usercontent/" });
 
 app.use(express.static("build"));
-app.use(express.json());
+app.use(cors());
 
 
 // Get a username and password combination from the database;
 // generate and return a session token if valid
-app.post("/api/login", (req, res) => {
+app.post("/api/login", express.json(), (req, res) => {
 	const { username, password } = req.body;
 	const stmt = db.prepare(`
 		SELECT id, password_hash
@@ -71,46 +74,36 @@ app.get("/api/username", (req, res) => {
  * If a shelf ID was provided, the container ID will be NULL, and vice versa.
  * Insert the item ID, shelf ID, and container ID into the relation.
  */
-app.post("/api/add-item", (req, res) => {
-	const { shelfOrContainerID, itemTypeName, initialCount=1, description=null, photoURL=null, expirationDate=null } = req.body;
-	const stmt = db.prepare(`
-		SELECT id
-		FROM items
-		WHERE item_type_name = ?
-	`);
-	const row = stmt.get(itemTypeName);
-	if (row) {
-		const stmt = db.prepare(`
-			SELECT item_id, shelf_id, container_id
-			FROM contains_item
-			WHERE item_id = ? AND (shelf_id = ? OR container_id = ?)
-		`);
-		const row = stmt.get(row.id, shelfOrContainerID, shelfOrContainerID);
-		if (row) {
-			const stmt = db.prepare(`
-				UPDATE items
-				SET count = count + ?
-				WHERE id = ?
-			`);
-			stmt.run(initialCount, row.item_id);
-			res.send({ item_id: row.item_id });
-		} else {
-			const item_id = generateToken();
-			const stmt1 = db.prepare(`
-				INSERT INTO items (id, item_type_name, count, description, photo_url, expiration_date)
-				VALUES (?, ?, ?, ?, ?, ?)
-			`);
-			stmt1.run(item_id, itemTypeName, initialCount, description, photoURL, expirationDate);
-			const stmt2 = db.prepare(`
-				INSERT INTO contains_item (item_id, shelf_id, container_id)
-				VALUES (?, ?, ?)
-			`);
-			stmt2.run(item_id, shelfOrContainerID, shelfOrContainerID);
-			res.send({ item_id });
-		}
-	} else {
-		res.status(400).json({ error: "Invalid item type name" });
+app.post("/api/add-item", upload.single("photo"), (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
 	}
+
+	const photoURL = req?.file?.path;
+	const {
+		shelfOrContainerID,
+		itemTypeName,
+		initialCount,
+		description,
+		name,
+		expirationDate
+	} = req.body;
+
+	const result = db.prepare(`
+		INSERT INTO items
+		(type, count, description, photo_url, name, expiration_date, description)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+	`).run(itemTypeName, initialCount, description, photoURL, name, expirationDate, description);
+
+	db.prepare(`
+		INSERT INTO contains_item (item_id, shelf_id, container_id)
+		VALUES (?, ?, ?)
+	`).run(result.lastInsertRowid, shelfOrContainerID, shelfOrContainerID);
+
+	res.send({
+		item_id: result.lastInsertRowid
+	});
 });
 
 
@@ -122,6 +115,17 @@ function generateToken() {
 		token += generateTokenChars[Math.floor(Math.random() * generateTokenChars.length)];
 	}
 	return token;
+}
+
+
+function validateToken(token) {
+	// const row = db.prepare(`
+	// 	SELECT user_id
+	// 	FROM sessions
+	// 	WHERE token = ?
+	// `).get(token);
+	// return row !== undefined;
+	return true;  // TODO: undo when login is implemented
 }
 
 
