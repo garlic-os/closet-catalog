@@ -1,10 +1,10 @@
 import React from 'react';
 import DashboardHeader from "../../components/dashboardheader/dashboardheader.js";
 import "./index.css";
-import AddItemCard from "../../components/addobjectcards/itemcard.js";
+import AddItemCard from "../../components/addobjectcards/additemcard.js";
 import eventBus from '../../EventBus/eventbus.js';
-import AddContainerCard from '../../components/addobjectcards/containercard.js';
-import AddShelfCard from '../../components/addobjectcards/shelfcard.js';
+import AddContainerCard from '../../components/addobjectcards/addcontainercard.js';
+import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
 
 class Dashboard extends React.Component {
