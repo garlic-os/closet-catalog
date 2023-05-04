@@ -10,11 +10,12 @@ db.exec(`
     );
 
     CREATE TABLE IF NOT EXISTS closet (
+    CREATE TABLE IF NOT EXISTS closet (
         Cid           INTEGER PRIMARY KEY AUTOINCREMENT,
         name          TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS shelf (
+    CREATE TABLE IF NOT EXISTS IF NOT EXISTS helf (
         Sid           INTEGER PRIMARY KEY AUTOINCREMENT,
         size          INTEGER NOT NULL,
         material      TEXT NOT NULL,
@@ -23,13 +24,7 @@ db.exec(`
         name          TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS shelf (
-        container_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-        type          TEXT,
-        name          TEXT NOT NULL,
-    );
-
-    CREATE TABLE IF NOT EXISTS item(
+    CREATE TABLE IF NOT EXISTS item (
         itemID          INTEGER PRIMARY KEY AUTOINCREMENT,
         custom_desc     TEXT,
         photoURL        TEXT,
@@ -40,14 +35,14 @@ db.exec(`
         name            TEXT NOT NULL
     );
 
-    CREATE TABLE IF NOT EXISTS Owns(
+    CREATE TABLE IF NOT EXISTS Owns (
         user_id         INTEGER FOREIGNKEY,//is this how you denote a foreign key in SQL?
         closet_id       INTEGER FOREIGNKEY,
         PRIMARY KEY (user_id, closet_id)//I don't think this is the right syntax... can't use PRIMARY KEY constraint as normal tho since there are two
         //to be finished
     );
 
-    CREATE TABLE IF NOT EXISTS Belongs_To(
+    CREATE TABLE IF NOT EXISTS Belongs_To (
         closet_id       INTEGER, //still don't know if thats the right syntax...
         shelf_id        INTEGER,
         container_id    INTEGER,
@@ -58,7 +53,7 @@ db.exec(`
         //to be finished
     );
 
-    CREATE TABLE IF NOT EXISTS Contains_Item(
+    CREATE TABLE IF NOT EXISTS Contains_Item (
         container_id    
         shelf_id        
         item_id     

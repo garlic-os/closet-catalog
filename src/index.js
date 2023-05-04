@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Dashboard from './screens/Dashboard/index.js';
+import Dashboard from './screens/Dashboard/dashboardindex.js';
 // import Container from './components/container/container.js'
-import Login from './screens/Login/index.js';
+// import Login from './screens/Login/loginindex.js';
 import "./App.css";
 
 const App = () => (
