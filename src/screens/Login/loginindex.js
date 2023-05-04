@@ -1,5 +1,6 @@
 import React from 'react';
 import "./login.css";
+import eventBus from '../../EventBus/eventbus';
 
 
 class  Login extends React.Component {
@@ -16,6 +17,16 @@ class  Login extends React.Component {
 
     handleButtons() {
         this.setState(prevState => ({isLogin:!prevState.isLogin}));
+    }
+
+    // John: The functionality of this component will have to altered a bit.
+    // This creates an event and a message is sent out that says "logging in"
+    // An event listener will listen for this specific message in the index.js
+    // Here's the functionality that needs to be added:
+    // Once the button is clicked(already have this) AND the user inputed the correct credentials
+    // we can dispatch the event to the document. Let me know when you get this done
+    dispatchLoginEvent() {
+        eventBus.dispatch("logging in", { message: "logging in"});
     }
 
     render() {
