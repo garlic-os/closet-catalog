@@ -105,7 +105,11 @@ class DashboardHeader extends React.Component {
                 <table>
                     <tbody>
                         <tr>
-                            <td id="left"><button type="button">Sign Out</button></td>
+                            <td id="left">
+                                <button type="button"
+                                        onClick={() => eventBus.dispatch("logging out")}
+                                >Sign Out</button>
+                            </td>
                             <td id="middle"><h1>Joe's Closet</h1></td>
                             <td id="right">
                                 <div>

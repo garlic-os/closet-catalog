@@ -74,7 +74,7 @@ class Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Login</h2>
                     <p>Please login or create an account.</p>
-                    <form onSubmit={this.handleLogin}>
+                    <form onSubmit={this.handleLogin.bind(this)}>
                         <b>Username: </b>
                         <input type="text" placeholder="Enter Username" id="uname" name="username" required></input>
                         <br></br><br></br>
@@ -91,7 +91,7 @@ class Login extends React.Component {
                 (<div id="card" className="center">
                     <h2>Create an Account</h2>
                     <p>Create an account with Closet Catalog</p>
-                    <form onSubmit={this.handleRegister}>
+                    <form onSubmit={this.handleRegister.bind(this)}>
                         <b>Username: </b>
                         <input type="text" placeholder="Enter Username" name="username" required></input>
                         <br></br><br></br>

@@ -17,7 +17,7 @@ app.use(cors());
 
 
 // Create an account
-app.post("/api/register", express.json(), async (req, res) => {
+app.post("/api/register", upload.none(), async (req, res) => {
 	const { username, password } = req.body;
 
 	if (username.length === 0) {
@@ -47,7 +47,7 @@ app.post("/api/register", express.json(), async (req, res) => {
 
 // Get a username and password combination from the database;
 // generate and return a session token if valid
-app.post("/api/login", express.json(), async (req, res) => {
+app.post("/api/login", upload.none(), async (req, res) => {
 	const { username, password } = req.body;
 	const row = db.prepare(`
 		SELECT user_id, password_hash
