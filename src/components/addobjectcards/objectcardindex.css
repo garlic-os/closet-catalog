@@ -10,8 +10,12 @@
     vertical-align: middle;
     padding-bottom: 5vh;
     padding-top: 1vh;
-    box-shadow: 0px 0px 30px rgb(0, 0, 0);
+    box-shadow: 0px 0px 100px rgb(0, 0, 0);
     border-radius: 40px;
+    position: absolute;
+    top: 20%;
+    left: 40%;
+    right: 40%;
 }
 
 .button {
