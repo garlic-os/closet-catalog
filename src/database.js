@@ -9,12 +9,12 @@ db.exec(`
         password_hash TEXT NOT NULL
     );
 
-    CREATE TABLE closet (
+    CREATE TABLE IF NOT EXISTS closet (
         Cid           INTEGER PRIMARY KEY AUTOINCREMENT,
         name          TEXT NOT NULL
     );
 
-    CREATE TABLE shelf (
+    CREATE TABLE IF NOT EXISTS helf (
         Sid           INTEGER PRIMARY KEY AUTOINCREMENT,
         size          INTEGER NOT NULL,
         material      INTEGER NOT NULL,
@@ -23,7 +23,7 @@ db.exec(`
         name          TEXT NOT NULL
     );
 
-    CREATE TABLE item (
+    CREATE TABLE IF NOT EXISTS item (
         name TEXT NOT NULL,
         picture TEXT NOT NULL,
         quantity INTEGER NOT NULL,

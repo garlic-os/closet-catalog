@@ -1,8 +1,9 @@
-const express = require("express");
-const Database = require("better-sqlite3");
+import express from 'express';
+import Database from 'better-sqlite3';
+import '../database.js';
 
 const app = express();
-const port = 3000;
+const port = 3001;
 const db = new Database("database.db");
 
 app.use(express.static("build"));
