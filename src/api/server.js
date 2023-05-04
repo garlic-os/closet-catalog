@@ -81,7 +81,7 @@ app.get("/api/username", (req, res) => {
 		res.status(401).json({ error: "Invalid token" });
 		return;
 	}
-	res.send(row.username);
+	res.send(username);
 });
 
 
