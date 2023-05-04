@@ -36,7 +36,7 @@ class Login extends React.Component {
         const data = new FormData(event.target);
         const response = await fetch(`${config.url}/api/login`, {
             method: 'POST',
-            body: data,
+            body: new FormData(event.target),
         });
         const body = await response.json();
         if (response.ok) {
@@ -50,10 +50,9 @@ class Login extends React.Component {
 
     async handleRegister(event) {
         event.preventDefault();
-        const data = new FormData(event.target);
         const response = await fetch(`${config.url}/api/register`, {
             method: 'POST',
-            body: data,
+            body: new FormData(event.target),
         });
         const body = await response.json();
         if (response.ok) {
