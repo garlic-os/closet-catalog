@@ -1,6 +1,6 @@
 import React from 'react';
 import "./login.css";
-import eventBus from '../../EventBus/eventbus';
+import eventBus from '../../EventBus/eventbus.js';
 
 
 class Login extends React.Component {
@@ -33,7 +33,7 @@ class Login extends React.Component {
     async handleLogin(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-        const response = await fetch('/api/login', {
+        const response = await fetch('http://localhost:3001/api/login', {
             method: 'POST',
             body: data,
         });
@@ -50,7 +50,7 @@ class Login extends React.Component {
     async handleRegister(event) {
         event.preventDefault();
         const data = new FormData(event.target);
-        const response = await fetch('/api/register', {
+        const response = await fetch('http://localhost:3001/api/register', {
             method: 'POST',
             body: data,
         });

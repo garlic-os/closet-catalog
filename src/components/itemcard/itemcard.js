@@ -1,5 +1,5 @@
 import React from 'react';
-import eventBus from '../../EventBus/eventbus';
+import eventBus from '../../EventBus/eventbus.js';
 import './itemcard.css';
 
 const ItemCard = (props) => {
