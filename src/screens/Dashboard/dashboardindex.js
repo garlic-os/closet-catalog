@@ -5,6 +5,7 @@ import AddItemCard from "../../components/addobjectcards/itemcard.js";
 import eventBus from '../../EventBus/eventbus.js';
 import AddContainerCard from '../../components/addobjectcards/containercard.js';
 import AddShelfCard from '../../components/addobjectcards/shelfcard.js';
+import Container from '../ContainerView/containerview.js';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -18,8 +19,18 @@ class Dashboard extends React.Component {
         this.showingItemsDidMount()
         this.showingContainersDidMount()
         this.showingShelvesDidMount()
-        this.state = {isInsertingItem: false, isInsertingContainer: false, isInsertingShelf: false,
-                        showingItems: false, showingContainers: false, showingShelves: false};
+        this.showingDashboardDidMount()
+        this.containerDidMount()
+        this.handleContainer()
+        this.state = {
+                        isInsertingItem: false,
+                        isInsertingContainer: false,
+                        isInsertingShelf: false,
+                        showingItems: false,
+                        showingContainers: false,
+                        showingShelves: false,
+                        showingDashboard: true
+                    };
     }
 
     // Adding and Canceling for Item
@@ -72,6 +83,7 @@ class Dashboard extends React.Component {
         );
     }
 
+    // Flips the state of showing items
     showingItemsDidMount() {
         eventBus.on("showing items", (data) => {
             this.setState(prevState => ({showingItems:!prevState.showingItems}));
@@ -79,6 +91,7 @@ class Dashboard extends React.Component {
         );
     }
 
+    // Flips the state of showing containers
     showingContainersDidMount() {
         eventBus.on("showing containers", (data) => {
             this.setState(prevState => ({showingContainers:!prevState.showingContainers}));            
@@ -86,6 +99,7 @@ class Dashboard extends React.Component {
         );
     }
 
+    // Flips the state of showing shelves
     showingShelvesDidMount() {
         eventBus.on("showing shelves", (data) => {
             this.setState(prevState => ({showingShelves:!prevState.showingShelves}));
@@ -93,17 +107,47 @@ class Dashboard extends React.Component {
         );
     }
 
+    // Listens for database and listens accordingly
+    showingDashboardDidMount() {
+        eventBus.on("is in dashboard", (data) => {
+            this.setState(prevState =>({showingDashboard:true}));
+        }  
+        );
+    }
+
+    handleContainer() {
+        console.log("adding container")
+        eventBus.dispatch("is in container", {message: "is in container"});
+    }
+
+    containerDidMount() {
+        eventBus.on("is in container", (data) => {
+            this.setState(prevState =>({showingDashboard:false}));
+            this.setState(prevState =>({showingContainers:false}));
+            this.setState(prevState =>({showingItems:false}));
+            this.setState(prevState =>({showingShelves:false}));
+        }
+        );
+    }
+
     render() {
         return (
             <div id="dashboard">
-            <DashboardHeader />
-            {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && <AddItemCard /> }
-            {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && <AddContainerCard /> }
-            {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && <AddShelfCard /> }
-            <h1>Dashboard</h1>
-            {this.state.showingItems && <h1>Showing Items</h1>}
-            {this.state.showingContainers && <h1>Showing Containers</h1>}
-            {this.state.showingShelves && <h1>Showing Shelves</h1>}
+                <DashboardHeader />
+                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && <AddItemCard /> }
+                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && <AddContainerCard /> }
+                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && <AddShelfCard /> }
+
+                {this.state.showingDashboard?
+                    <div>
+                    <h1>Dashboard</h1>
+                    {this.state.showingItems && <h1>Showing Items</h1>}
+                    {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Fake Container</button></div>}
+                    {this.state.showingShelves && <h1>Showing Shelves</h1>}
+                    </div>
+                    :
+                    <h1>HI</h1>
+                }
             </div>
         )
     }
