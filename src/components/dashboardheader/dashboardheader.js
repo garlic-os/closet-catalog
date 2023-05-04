@@ -5,8 +5,13 @@ import eventBus from '../../EventBus/eventbus.js'
 class ToggleBar extends React.Component {
 
     handleButton = (type) => {
-        console.log("applying");
-        eventBus.dispatch("adding item", {message: "adding item"});
+        if (type === "item") {
+            eventBus.dispatch("adding item", {message: "adding item"});
+        } else if (type === "container") {
+            eventBus.dispatch("adding container", {message: "adding container"});
+        } else if (type === "shelf") {
+            eventBus.dispatch("adding shelf", {message: "adding shelf"});
+        }
     }
 
     render() {
@@ -22,13 +27,13 @@ class ToggleBar extends React.Component {
                     <input type="checkbox" id="showitems"></input><b> Show Items</b>
                 </div>
                 <div>
-                    <button type="button" onClick={this.handleButton}>Insert Item</button>
+                    <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
                 </div>
                 <div>
-                    <button type="button">Insert Containers</button>
+                    <button type="button" onClick={() => this.handleButton("container")}>Insert Containers</button>
                 </div>
                 <div>
-                    <button type="button">Insert Shelf</button>
+                    <button type="button" onClick={() => this.handleButton("shelf")}>Insert Shelf</button>
                 </div>
             </div>
         )

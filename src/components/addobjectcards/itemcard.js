@@ -33,8 +33,7 @@ async function addItem(event) {
 function AddItemCard () {
     const itemAttributes = {'Name': 'itemTypeName', 'Picture':'photoURL', 'Quantity': 'initialCount', 'Type':'itemTypeName', 'Expiration Date':'expirationDate'};
 
-    const handleButton = (type) => {
-        console.log("applying");
+    const handleButton = () => {
         eventBus.dispatch("cancel adding item", {message: "cancel adding item"});
     }
 

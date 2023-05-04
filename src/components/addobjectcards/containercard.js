@@ -1,8 +1,14 @@
 import React from 'react';
 import "./objectcardindex.css";
+import eventBus from '../../EventBus/eventbus';
 
 function AddContainerCard () {
     const containerAttributes = ['ID', 'Size', 'Material'];
+
+    const handleButton = () => {
+        eventBus.dispatch("cancel adding container", {message: "cancel adding container"});
+    }
+
     return (
         <div id="itemcard">
             <h2>Add an Container</h2>
@@ -20,7 +26,7 @@ function AddContainerCard () {
                     )
                 }
             </form>
-            <button className="button" type="button">Cancel</button>
+            <button className="button" type="button" onClick={handleButton}>Cancel</button>
             <button className="button" type="submit">Add Container</button>
         </div> 
     )
