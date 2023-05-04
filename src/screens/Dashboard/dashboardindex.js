@@ -23,6 +23,9 @@ class Dashboard extends React.Component {
         this.showingDashboardDidMount()
         this.containerDidMount()
         this.handleContainer()
+        this.dispatchDisplayItem()
+        this.handleDisplayItem()
+        this.handleDisplayItemUnMount()
         this.state = {
                         isInsertingItem: false,
                         isInsertingContainer: false,
@@ -31,6 +34,7 @@ class Dashboard extends React.Component {
                         showingContainers: false,
                         showingShelves: false,
                         showingDashboard: true,
+                        displayItem: false
                     };
     }
 
@@ -40,6 +44,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingItem:true}));
             this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingShelf: false}));
+            this.setState(prevState => ({displayItem: false}));
             }
         );
     }
@@ -56,6 +61,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingContainer:true}));
             this.setState(prevState => ({isInsertingShelf: false}));
             this.setState(prevState => ({isInsertingItem:false}));
+            this.setState(prevState => ({displayItem: false}));
         }
         );
     }
@@ -73,6 +79,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingShelf: true}));
             this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingItem:false}));
+            this.setState(prevState => ({displayItem: false}));
         }
         );
     }
@@ -131,18 +138,40 @@ class Dashboard extends React.Component {
         );
     }
 
+    dispatchDisplayItem() {
+        eventBus.dispatch("display item", {message: "display item"});
+    }
+
+    handleDisplayItem() {
+        eventBus.on("display item", (data) => {
+            this.setState(prevState => ({isInsertingShelf: false}));
+            this.setState(prevState => ({isInsertingContainer: false}));
+            this.setState(prevState => ({isInsertingItem:false}));
+            this.setState(prevState => ({displayItem: true}));
+        }
+        );
+    }
+
+    handleDisplayItemUnMount() {
+        eventBus.on("cancel display item", (data) => {
+            console.log("HERE")
+            this.setState(prevState => ({displayItem: false}));
+        }
+        );
+    }
+
     render() {
         return (
             <div id="dashboard">
                 <DashboardHeader />
-                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && <AddItemCard /> }
-                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && <AddContainerCard /> }
-                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && <AddShelfCard /> }
-
+                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard /> }
+                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard /> }
+                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard /> }
+                {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
                     <h1>Dashboard</h1>
-                    {this.state.showingItems && <div><h1>Showing Items</h1><button type="button">Dummy Item</button></div>}
+                    {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
                     {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
                     {this.state.showingShelves && <h1>Showing Shelves</h1>}
                     </div>
