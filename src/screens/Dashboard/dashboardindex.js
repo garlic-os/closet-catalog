@@ -1,11 +1,12 @@
 import React from 'react';
-import DashboardHeader from "../../components/dashboardheader/dashboardheader.js";
-import "./index.css";
-import AddItemCard from "../../components/addobjectcards/additemcard.js";
+import DashboardHeader from '../../components/dashboardheader/dashboardheader.js';
+import './index.css';
+import AddItemCard from '../../components/addobjectcards/additemcard.js';
 import eventBus from '../../EventBus/eventbus.js';
 import AddContainerCard from '../../components/addobjectcards/addcontainercard.js';
 import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
+import ItemCard from '../../components/itemcard/itemcard.js';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -141,8 +142,8 @@ class Dashboard extends React.Component {
                 {this.state.showingDashboard?
                     <div>
                     <h1>Dashboard</h1>
-                    {this.state.showingItems && <h1>Showing Items</h1>}
-                    {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Fake Container</button></div>}
+                    {this.state.showingItems && <div><h1>Showing Items</h1><button type="button">Dummy Item</button></div>}
+                    {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
                     {this.state.showingShelves && <h1>Showing Shelves</h1>}
                     </div>
                     :
