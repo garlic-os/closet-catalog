@@ -19,7 +19,7 @@ function AddContainerCard () {
                     containerAttributes.map((attribute) =>
                         <div>
                             <b>{attribute}: </b>
-                            <input type={attribute === 'Picture'? "file":"text"}></input>
+                            <input type={attribute === 'Picture'? "file":"text"} required></input>
                             <br></br><br></br>
                         </div>
 
