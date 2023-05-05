@@ -191,11 +191,11 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 		return;
 	}
 
-	const { name, description, closet_id } = req.body;
+	const { name, size, units, closet_id } = req.body;
 	const result = db.prepare(`
-		INSERT INTO shelves (name)
-		VALUES (?, ?)
-	`).run(name, description);
+		INSERT INTO shelves (name, size, units)
+		VALUES (?, ?, ?)
+	`).run(name, size, units);
 
 	db.prepare(`
 		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
