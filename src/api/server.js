@@ -42,14 +42,19 @@ app.post("/api/register", upload.none(), async (req, res) => {
 		INSERT INTO users (username, password_hash)
 		VALUES (?, ?)
 	`);
-
+	const user_id = stmt.run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
 	// Create a closet for the user
 	db.prepare(`
 		INSERT INTO closets (user_id, name)
 		VALUES ((SELECT user_id FROM users WHERE username = ?), ?)
 	`).run(username, "My Closet");
 
-	const user_id = stmt.run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
+	//insert the user_id and closet_id into the owns relation
+	// db.prepare(`
+	// 	INSERT INTO Owns (user_id, closet_id)
+	// 	VALUES ((SELECT user_id FROM users WHERE username = ?), (SELECT closet_id FROM closets WHERE user user_id = ((SELECT user_id FROM users WHERE username = ?))))
+	// `)
+
 	res.send({ user_id });
 });
 
@@ -144,48 +149,43 @@ app.get("/api/closets", (req, res) => {
 // Get the shelves, containers, and items in a closet
 // Sends back a DashboardCloset object
 app.get("/api/closet/:closetID", (req, res) => {
-	if (!validateToken(req.headers.authorization)) {
-		res.status(401).json({ error: "Invalid session token" });
-		return;
-	}
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+	console.log("hi");
 	const closetID = req.params.closetID;
 	const belongsToRelations = db.prepare(`
 		SELECT shelf_id, container_id
 		FROM belongs_to
 		WHERE closet_id = ?
 	`).all(closetID);
-	const shelves = db.prepare(`
-		SELECT shelf_id, name, size, units
-		FROM shelves
-		WHERE closet_id = ?
-	`).all(closetID);
-	const containers = db.prepare(`
-		SELECT container_id, name, size, units
-		FROM containers
-		WHERE closet_id = ?
-	`).all(closetID);
+	console.log("test");
 	const items = db.prepare(`
-		SELECT item_id, name, count, description, photo_url, expiration_date
+		SELECT *
 		FROM items
 		WHERE item_id IN (
 			SELECT item_id
 			FROM contains_item
 			WHERE shelf_id IN (
 				SELECT shelf_id
-				FROM shelves
+				FROM Belongs_To
 				WHERE closet_id = ?
+			) OR container_id IN (
+				SELECT container_id
+				FROM Belongs_To
+				Where closet_id = ?
 			)
 		)
-	`).all(closetID);
+	`).all(closetID, closetID);
 	const closet = {
 		closet_id: closetID,
 		name: db.prepare("SELECT name FROM closets WHERE closet_id = ?").pluck().get(closetID),
-		shelves: shelves.map(shelf => ({
-			...shelf,
-			containers: containers.filter(container => container.shelf_id === shelf.shelf_id),
-			items: items.filter(item => belongsToRelations.find(relation => relation.shelf_id === shelf.shelf_id && relation.container_id === null).item_id === item.item_id)
-		}))
+		shelves: belongsToRelations.shelf_id,
+		containers: belongsToRelations.container_id,
+		items: items
 	};
+	console.log(closet);
 	res.send(closet);
 });
 
@@ -261,6 +261,62 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 });
 
 
+app.post("/api/delete-shelf", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+	const shelf_id = req.body.shelf_id;
+	const stmt = db.prepare(`
+		SELECT *
+		FROM shelves
+		WHERE shelf_id = ?
+	`);
+	const stmt2 = db.prepare(`
+		DELETE 
+		FROM shelves
+		WHERE shelf_id = ?
+	`);
+	
+	const result = stmt.get(shelf_id);
+	if(result === undefined)
+	{
+		res.sendStatus(400);
+	}
+	else{
+		stmt2.run(shelf_id);
+		res.sendStatus(200);
+	}
+});
+
+app.post("/api/delete-container", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+	const container_id = req.body.item_id;
+	const stmt = db.prepare(`
+		SELECT *
+		FROM items
+		WHERE container_id = ?
+	`);
+	const stmt2 = db.prepare(`
+		DELETE 
+		FROM items
+		WHERE container_id = ?
+	`);
+	
+	const result = stmt.get(container_id);
+	if(result === undefined)
+	{
+		res.sendStatus(400);
+	}
+	else{
+		stmt2.run(container_id);
+		res.sendStatus(200);
+	}
+});
+
 app.post("/api/add-container", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
@@ -280,7 +336,6 @@ app.post("/api/add-container", upload.none(), (req, res) => {
 
 	res.sendStatus(201);
 });
-
 
 app.get("/api/search", (req, res) => {
 	if (!validateToken(req.headers.authorization)) {

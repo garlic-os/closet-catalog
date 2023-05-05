@@ -62,4 +62,10 @@ db.exec(`
         shelf_id        INTEGER REFERENCES shelves(shelf_id),
         PRIMARY KEY     (item_id, container_id, shelf_id)
     );
+
+    CREATE TABLE IF NOT EXISTS Owns (
+        user_id         INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+        closet_id       INTEGER REFERENCES closet(closet_id) ON DELETE CASCADE,
+        PRIMARY KEY     (user_id, closet_id)
+    );
 `);
