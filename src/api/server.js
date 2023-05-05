@@ -206,6 +206,27 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 });
 
 
+app.post("/api/add-container", upload.none(), (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+
+	const { name, size, units, closet_id, shelf_id } = req.body;
+	const result = db.prepare(`
+		INSERT INTO containers (name, size, units)
+		VALUES (?, ?, ?)
+	`).run(name, size, units);
+
+	db.prepare(`
+		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
+		VALUES (?, ?, ?)
+	`).run(closet_id, shelf_id, result.lastInsertRowid);
+
+	res.sendStatus(201);
+});
+
+
 function validateToken(token) {
 	const row = db.prepare(`
 		SELECT user_id
