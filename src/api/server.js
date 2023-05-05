@@ -85,6 +85,21 @@ app.get("/api/username", (req, res) => {
 });
 
 
+// Get all closets belonging to the user
+app.get("/api/closets", (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+	const closets = db.prepare(`
+		SELECT closet_id, name
+		FROM closets
+		WHERE user_id = (SELECT user_id FROM sessions WHERE token = ?)
+	`).all(req.headers.authorization);
+	res.send(closets);
+});
+
+
 /**
  * Create an item and add it to a shelf or container.
  * Accesses the “items” and “contains_item” tables.
@@ -140,8 +155,18 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 		return;
 	}
 
-	const { name, description } = req.body;
+	const { name, description, closet_id } = req.body;
+	const result = db.prepare(`
+		INSERT INTO shelves (name)
+		VALUES (?, ?)
+	`).run(name, description);
 
+	db.prepare(`
+		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
+		VALUES (?, ?, NULL)
+	`).run(closet_id, result.lastInsertRowid);
+
+	res.sendStatus(201);
 });
 
 

@@ -23,10 +23,10 @@ db.exec(`
 
     CREATE TABLE IF NOT EXISTS shelves (
         shelf_id      INTEGER PRIMARY KEY AUTOINCREMENT,
-        size          INTEGER NOT NULL,
-        material      TEXT    NOT NULL,
-        units         TEXT    NOT NULL,
-        value         INTEGER NOT NULL,
+        size          INTEGER NOT NULL DEFAULT 0,
+        units         TEXT    NOT NULL DEFAULT "",
+        material      TEXT,
+        value         INTEGER,
         name          TEXT    NOT NULL
     );
 
@@ -35,7 +35,7 @@ db.exec(`
         size          INTEGER NOT NULL,
         material      TEXT    NOT NULL,
         units         TEXT    NOT NULL,
-        value         INTEGER NOT NULL,
+        value         INTEGER,
         name          TEXT    NOT NULL
     );
 
