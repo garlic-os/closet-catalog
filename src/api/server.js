@@ -101,12 +101,22 @@ app.get("/api/closets", (req, res) => {
 
 
 
-
 /**
- * @typedef {Object} DashboardCloset
- * @property {number} closet_id
+ * @typedef {Object} DashboardItem
+ * @property {number} item_id
  * @property {string} name
- * @property {DashboardShelf[]} shelves
+ * @property {number} count
+ * @property {string} description
+ * @property {string} photo_url
+ * @property {number} expiration_date
+ */
+/**
+ * @typedef {Object} DashboardContainer
+ * @property {number} container_id
+ * @property {string} name
+ * @property {number} size
+ * @property {string} units
+ * @property {DashboardItem[]} items
  */
 /**
  * @typedef {Object} DashboardShelf
@@ -118,23 +128,11 @@ app.get("/api/closets", (req, res) => {
  * @property {DashboardItem[]} items
  */
 /**
- * @typedef {Object} DashboardContainer
- * @property {number} container_id
+ * @typedef {Object} DashboardCloset
+ * @property {number} closet_id
  * @property {string} name
- * @property {number} size
- * @property {string} units
- * @property {DashboardItem[]} items
+ * @property {DashboardShelf[]} shelves
  */
-/**
- * @typedef {Object} DashboardItem
- * @property {number} item_id
- * @property {string} name
- * @property {number} count
- * @property {string} description
- * @property {string} photo_url
- * @property {number} expiration_date
- */
-
 
 // Get the shelves, containers, and items in a closet
 // Sends back a DashboardCloset object
@@ -233,6 +231,7 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 		item_id: result.lastInsertRowid
 	});
 });
+
 
 /* retrieves item data and sends back to frontend in a formdata object
 	request must be made with at least the itemid supplied
