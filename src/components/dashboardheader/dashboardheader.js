@@ -79,7 +79,6 @@ class ToggleBar extends React.Component {
 }
 
 class DashboardHeader extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {isInDashboard: true, username: ""};

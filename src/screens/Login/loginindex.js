@@ -37,28 +37,29 @@ class Login extends React.Component {
             method: 'POST',
             body: new FormData(event.target),
         });
-        const body = await response.json();
+        const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", body.token);
+            localStorage.setItem("token", data.token);
             this.dispatchLoginEvent();
         } else {
-            alert(body.error);
+            alert(data.error);
         }
     }
 
 
     async handleRegister(event) {
         event.preventDefault();
+        console.log(`${config.url}/api/register`);
         const response = await fetch(`${config.url}/api/register`, {
             method: 'POST',
             body: new FormData(event.target),
         });
-        const body = await response.json();
+        const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", body.token);
+            localStorage.setItem("token", data.token);
             this.dispatchLoginEvent();
         } else {
-            alert(body.error);
+            alert(data.error);
         }
     }
 

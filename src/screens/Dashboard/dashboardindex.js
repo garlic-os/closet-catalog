@@ -188,12 +188,12 @@ class Dashboard extends React.Component {
                 {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
-                    {console.log('hi')}
-                    {console.log(this.state.closetdata)}
-                    <h1>Dashboard</h1>
-                    {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
-                    {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
-                    {this.state.showingShelves && <h1>Showing Shelves</h1>}
+                        {console.log('hi')}
+                        {console.log(this.state.closetdata)}
+                        <h1>Dashboard</h1>
+                        {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
+                        {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
+                        {this.state.showingShelves && <h1>Showing Shelves</h1>}
                     </div>
                     :
                     <Container />
