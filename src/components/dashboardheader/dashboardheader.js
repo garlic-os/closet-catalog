@@ -92,7 +92,6 @@ class DashboardHeader extends React.Component {
     constructor(props) {
         super(props);
         this.state = {isInDashboard: true, username: ""};
-        this.getUsername();
     }
 
     componentDidMount() {
