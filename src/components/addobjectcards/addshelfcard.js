@@ -3,7 +3,7 @@ import "./objectcardindex.css";
 import eventBus from '../../EventBus/eventbus.js';
 
 function AddShelfCard() {
-    const shelfAttributes = ['Name', 'Sid', 'Size', 'Material', 'Units', 'Value'];
+    const shelfAttributes = ['Name', 'Size', 'Material', 'Units', 'Value'];
 
     const handleButton = () => {
         eventBus.dispatch("cancel adding shelf", {message: "cancel adding shelf"});
@@ -25,7 +25,7 @@ function AddShelfCard() {
                     )
                 }
             </form>
-            <button className="button" type="button" onClick={handleButton}>Cancel</button>
+            <button className="button" type="button" onClick={handleButton}>Back</button>
             <button className="button" type="submit">Add Container</button>
         </div> 
     )

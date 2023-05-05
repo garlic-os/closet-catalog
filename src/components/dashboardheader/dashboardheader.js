@@ -94,10 +94,30 @@ class DashboardHeader extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {isInDashboard: true};
+        this.state = {isInDashboard: true, username: ""};
+        this.getUsername();
     }
 
+    componentDidMount() {
+        this.getUsername();
+    }
     
+    
+    async getUsername() {
+        // Sending a get request to the api/username endpoint and passing in session token
+        // so that the server knows who it's talking to, and the server will give back the user
+        const response = await fetch('http://localhost:3001/api/username', {
+            headers:{'authorization': localStorage.getItem('token')}
+        });
+        if (response.ok) {
+            const username = await response.text();
+            this.setState({ username });
+            // this.state.username = await response.text();
+        } else {
+            const data = await response.json();
+            alert(data.error);
+        }
+    }    
 
     render() {
         return (
@@ -110,7 +130,7 @@ class DashboardHeader extends React.Component {
                                         onClick={() => eventBus.dispatch("logging out")}
                                 >Sign Out</button>
                             </td>
-                            <td id="middle"><h1>Joe's Closet</h1></td>
+                            <td id="middle"><h1>{this.state.username}'s Closet</h1></td>
                             <td id="right">
                                 <div>
                                     <input type="text"></input>

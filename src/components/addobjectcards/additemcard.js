@@ -72,7 +72,7 @@ function AddItemCard () {
                     items.map(({ name, slug, type }) =>
                         <div key={count++}>
                             <b>{name}: </b>
-                            <input name={slug} type={type} required></input>
+                            <input name={slug} type={type}></input>
                             <br/><br/>
                         </div>
                     )

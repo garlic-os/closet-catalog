@@ -33,7 +33,6 @@ class Login extends React.Component {
 
     async handleLogin(event) {
         event.preventDefault();
-        const data = new FormData(event.target);
         const response = await fetch(`${config.url}/api/login`, {
             method: 'POST',
             body: new FormData(event.target),

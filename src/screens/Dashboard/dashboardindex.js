@@ -34,7 +34,8 @@ class Dashboard extends React.Component {
                         showingContainers: false,
                         showingShelves: false,
                         showingDashboard: true,
-                        displayItem: false
+                        displayItem: false,
+                        closetdata: {}
                     };
     }
 
@@ -160,6 +161,23 @@ class Dashboard extends React.Component {
         );
     }
 
+    componentDidMount() {
+        this.getClosetData();
+    }
+
+    async getClosetData() {
+        const response = await fetch('http://localhost:3001/api/closet/:closetID', {
+            headers:{'authorization': localStorage.getItem('token')}
+        });
+        if (response.ok) {
+            const closetdata = await response.json();
+            this.setState({ closetdata });
+        } else {
+            const data = await response.json();
+            alert(data.error);
+        }
+    }
+
     render() {
         return (
             <div id="dashboard">
@@ -170,6 +188,8 @@ class Dashboard extends React.Component {
                 {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
+                    {console.log('hi')}
+                    {console.log(this.state.closetdata)}
                     <h1>Dashboard</h1>
                     {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
                     {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}

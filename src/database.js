@@ -12,12 +12,12 @@ db.exec(`
 
     CREATE TABLE IF NOT EXISTS sessions (
         token         TEXT    PRIMARY KEY,
-        user_id       INTEGER REFERENCES users(user_id) ON DELETE CASCADE
+        user_id       INTEGER REFERENCES users(user_id)
     );
 
     CREATE TABLE IF NOT EXISTS closets (
         closet_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id       INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+        user_id       INTEGER REFERENCES users(user_id),
         name          TEXT NOT NULL
     );
 
@@ -50,16 +50,16 @@ db.exec(`
     );
 
     CREATE TABLE IF NOT EXISTS Belongs_To (
-        closet_id       INTEGER REFERENCES closets(closet_id) ON DELETE CASCADE,
-        shelf_id        INTEGER REFERENCES shelves(shelf_id) ON DELETE CASCADE,
-        container_id    INTEGER REFERENCES containers(container_id) ON DELETE CASCADE,
+        closet_id       INTEGER REFERENCES closets(closet_id),
+        shelf_id        INTEGER REFERENCES shelves(shelf_id),
+        container_id    INTEGER REFERENCES containers(container_id),
         PRIMARY KEY     (closet_id, shelf_id, container_id)
     );
 
     CREATE TABLE IF NOT EXISTS Contains_Item (
-        item_id         INTEGER REFERENCES items(item_id) ON DELETE CASCADE,
-        container_id    INTEGER REFERENCES containers(container_id) ON DELETE CASCADE,
-        shelf_id        INTEGER REFERENCES shelves(shelf_id) ON DELETE CASCADE,
+        item_id         INTEGER REFERENCES items(item_id),
+        container_id    INTEGER REFERENCES containers(container_id),
+        shelf_id        INTEGER REFERENCES shelves(shelf_id),
         PRIMARY KEY     (item_id, container_id, shelf_id)
     );
 `);
