@@ -148,6 +148,42 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 	});
 });
 
+/* retrieves item data and sends back to frontend in a formdata object
+	request must be made with at least the itemid supplied
+*/
+app.get("/api/item-display", upload.none(), async (req, res) => {
+	const item_id = req.query.item_id;
+	console.log(item_id);
+	const shelf_id = req.query.shelf_id;
+	const container_id = req.query.container_id;
+	// if (shelf_id != null)//look for item on given shelf
+	// {
+
+	// }
+	// if (c_id != null)//look for item in given container
+	// {
+
+	// }
+	// else{//look through list of all items
+		
+	// }//implement this after I know this works lol
+	const stmt = db.prepare(`
+			SELECT *
+			FROM items
+			WHERE item_id = ?
+		`);
+	const result = stmt.get(item_id);
+	console.log(result);
+	res.send({
+		itemid: result.item_id,
+		description: result.description,
+		photoURL: result.photo_url,
+		type: result.type,
+		expirationDate: result.expiration_date,
+		name: result.name
+	});
+});
+
 
 app.post("/api/add-shelf", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
