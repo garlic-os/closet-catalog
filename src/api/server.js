@@ -236,38 +236,38 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 /* retrieves item data and sends back to frontend in a formdata object
 	request must be made with at least the itemid supplied
 */
-app.get("/api/item-display", upload.none(), async (req, res) => {
-	const item_id = req.query.item_id;
-	console.log(item_id);
-	const shelf_id = req.query.shelf_id;
-	const container_id = req.query.container_id;
-	// if (shelf_id != null)//look for item on given shelf
-	// {
+// app.get("/api/item-display", upload.none(), async (req, res) => {
+// 	const item_id = req.query.item_id;
+// 	console.log(item_id);
+// 	const shelf_id = req.query.shelf_id;
+// 	const container_id = req.query.container_id;
+// 	// if (shelf_id != null)//look for item on given shelf
+// 	// {
 
-	// }
-	// if (c_id != null)//look for item in given container
-	// {
+// 	// }
+// 	// if (c_id != null)//look for item in given container
+// 	// {
 
-	// }
-	// else{//look through list of all items
+// 	// }
+// 	// else{//look through list of all items
 		
-	// }//implement this after I know this works lol
-	const stmt = db.prepare(`
-			SELECT *
-			FROM items
-			WHERE item_id = ?
-		`);
-	const result = stmt.get(item_id);
-	console.log(result);
-	res.send({
-		itemid: result.item_id,
-		description: result.description,
-		photoURL: result.photo_url,
-		type: result.type,
-		expirationDate: result.expiration_date,
-		name: result.name
-	});
-});
+// 	// }//implement this after I know this works lol
+// 	const stmt = db.prepare(`
+// 			SELECT *
+// 			FROM items
+// 			WHERE item_id = ?
+// 		`);
+// 	const result = stmt.get(item_id);
+// 	console.log(result);
+// 	res.send({
+// 		itemid: result.item_id,
+// 		description: result.description,
+// 		photoURL: result.photo_url,
+// 		type: result.type,
+// 		expirationDate: result.expiration_date,
+// 		name: result.name
+// 	});
+// });
 
 
 app.post("/api/add-shelf", upload.none(), (req, res) => {
@@ -309,6 +309,38 @@ app.post("/api/add-container", upload.none(), (req, res) => {
 	`).run(closet_id, shelf_id, result.lastInsertRowid);
 
 	res.sendStatus(201);
+});
+
+
+app.get("/api/search", (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+	const query = req.query.q;
+	const matches = [];
+	matches.concat(
+		db.prepare(`
+			SELECT file_id
+			FROM files
+			WHERE name LIKE ?
+		`).all(`%${query}%`)
+	);
+	matches.concat(
+		db.prepare(`
+			SELECT container_id
+			FROM containers
+			WHERE name LIKE ?
+		`).all(`%${query}%`)
+	);
+	matches.concat(
+		db.prepare(`
+			SELECT shelf_id
+			FROM shelves
+			WHERE name LIKE ?
+		`).all(`%${query}%`)
+	);
+	res.send(matches);
 });
 
 
