@@ -100,6 +100,92 @@ app.get("/api/closets", (req, res) => {
 });
 
 
+
+
+/**
+ * @typedef {Object} DashboardCloset
+ * @property {number} closet_id
+ * @property {string} name
+ * @property {DashboardShelf[]} shelves
+ */
+/**
+ * @typedef {Object} DashboardShelf
+ * @property {number} shelf_id
+ * @property {string} name
+ * @property {number} size
+ * @property {string} units
+ * @property {DashboardContainer[]} containers
+ * @property {DashboardItem[]} items
+ */
+/**
+ * @typedef {Object} DashboardContainer
+ * @property {number} container_id
+ * @property {string} name
+ * @property {number} size
+ * @property {string} units
+ * @property {DashboardItem[]} items
+ */
+/**
+ * @typedef {Object} DashboardItem
+ * @property {number} item_id
+ * @property {string} name
+ * @property {number} count
+ * @property {string} description
+ * @property {string} photo_url
+ * @property {number} expiration_date
+ */
+
+
+// Get the shelves, containers, and items in a closet
+// Sends back a DashboardCloset object
+app.get("/api/closet/:closetID", (req, res) => {
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+	const closetID = req.params.closetID;
+	const belongsToRelations = db.prepare(`
+		SELECT shelf_id, container_id
+		FROM belongs_to
+		WHERE closet_id = ?
+	`).all(closetID);
+	const shelves = db.prepare(`
+		SELECT shelf_id, name, size, units
+		FROM shelves
+		WHERE closet_id = ?
+	`).all(closetID);
+	const containers = db.prepare(`
+		SELECT container_id, name, size, units
+		FROM containers
+		WHERE closet_id = ?
+	`).all(closetID);
+	const items = db.prepare(`
+		SELECT item_id, name, count, description, photo_url, expiration_date
+		FROM items
+		WHERE item_id IN (
+			SELECT item_id
+			FROM contains_item
+			WHERE shelf_id IN (
+				SELECT shelf_id
+				FROM shelves
+				WHERE closet_id = ?
+			)
+		)
+	`).all(closetID);
+	const closet = {
+		closet_id: closetID,
+		name: db.prepare("SELECT name FROM closets WHERE closet_id = ?").pluck().get(closetID),
+		shelves: shelves.map(shelf => ({
+			...shelf,
+			containers: containers.filter(container => container.shelf_id === shelf.shelf_id),
+			items: items.filter(item => belongsToRelations.find(relation => relation.shelf_id === shelf.shelf_id && relation.container_id === null).item_id === item.item_id)
+		}))
+	};
+	res.send(closet);
+});
+
+
+
 /**
  * Create an item and add it to a shelf or container.
  * Accesses the “items” and “contains_item” tables.

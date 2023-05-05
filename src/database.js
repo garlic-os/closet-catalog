@@ -32,9 +32,9 @@ db.exec(`
 
     CREATE TABLE IF NOT EXISTS containers (
         container_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-        size          INTEGER NOT NULL,
-        material      TEXT    NOT NULL,
-        units         TEXT    NOT NULL,
+        size          INTEGER NOT NULL DEFAULT 0,
+        units         TEXT    NOT NULL DEFAULT "",
+        material      TEXT,
         value         INTEGER,
         name          TEXT    NOT NULL
     );
@@ -44,7 +44,7 @@ db.exec(`
         description     TEXT,
         photo_url       TEXT,
         type            TEXT,
-        count           INTEGER NOT NULL,
+        count           INTEGER NOT NULL DEFAULT 1,
         expiration_date TEXT,
         name            TEXT    NOT NULL
     );
