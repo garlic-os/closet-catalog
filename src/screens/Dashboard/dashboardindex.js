@@ -166,7 +166,19 @@ class Dashboard extends React.Component {
     }
 
     async getClosetData() {
-        const response = await fetch('http://localhost:3001/api/closet/:closetID', {
+        let closets;
+        {
+            const response = await fetch('http://localhost:3001/api/closets', {
+                headers:{'authorization': localStorage.getItem('token')}
+            });
+            if (response.ok) {
+                closets = await response.json();
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        }
+        const response = await fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {

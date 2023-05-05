@@ -68,7 +68,7 @@ class Login extends React.Component {
         return (
             <div id="login">
                 <h1>Closet Catalog</h1>
-                <p>Welcome to the ClosetCatalog! This is a database that you can access anywhere on the internet.</p>
+                <p>Welcome to the Closet Catalog! This is a database that you can access anywhere on the internet.</p>
                 
                 {(this.state.isLogin) ?
                 (<div id="card" className="center">

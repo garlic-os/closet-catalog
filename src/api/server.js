@@ -38,24 +38,26 @@ app.post("/api/register", upload.none(), async (req, res) => {
 	}
 
 	// Create the user
-	const stmt = db.prepare(`
+	const user_id = db.prepare(`
 		INSERT INTO users (username, password_hash)
 		VALUES (?, ?)
-	`);
-	const user_id = stmt.run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
+	`).run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
+
+
 	// Create a closet for the user
 	db.prepare(`
 		INSERT INTO closets (user_id, name)
-		VALUES ((SELECT user_id FROM users WHERE username = ?), ?)
-	`).run(username, "My Closet");
+		VALUES (?, ?)
+	`).run(user_id, "My Closet");
 
-	//insert the user_id and closet_id into the owns relation
-	// db.prepare(`
-	// 	INSERT INTO Owns (user_id, closet_id)
-	// 	VALUES ((SELECT user_id FROM users WHERE username = ?), (SELECT closet_id FROM closets WHERE user user_id = ((SELECT user_id FROM users WHERE username = ?))))
-	// `)
+	// Sign the user in
+	const token = crypto.randomUUID();
+	db.prepare(`
+		INSERT INTO sessions (user_id, token)
+		VALUES (?, ?)
+	`).run(user_id, token);
 
-	res.send({ user_id });
+	res.send({ token });
 });
 
 // Get a username and password combination from the database;
@@ -72,11 +74,10 @@ app.post("/api/login", upload.none(), async (req, res) => {
 		return;
 	}
 	const token = crypto.randomUUID();
-	const stmt = db.prepare(`
+	db.prepare(`
 		INSERT INTO sessions (user_id, token)
 		VALUES (?, ?)
-	`);
-	stmt.run(row.user_id, token);
+	`).run(row.user_id, token);
 	res.send({ token });
 });
 
