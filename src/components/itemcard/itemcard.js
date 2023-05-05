@@ -8,6 +8,15 @@ const ItemCard = (props) => {
         eventBus.dispatch("cancel display item", {message: "cancel display item"});
     }
 
+    const handleDeleteItem = () => {
+        fetch("/api/delete-item", {
+            method: "post",
+            body: {
+                item_id: document.getElementById("yes")
+            }
+        });
+    }
+
     return (
         <div id="displayitem">
             <h1>Name</h1>
@@ -18,7 +27,7 @@ const ItemCard = (props) => {
                     <li>item ID</li>
                 </ol>
             <button type="button" onClick={() => handleBackButton()}>{'<'} Back</button>
-            <button type="buttom">Remove Item</button>
+            <button type="buttom" onClick={() => handleDeleteItem()}>Remove Item</button>
         </div>
     )
 }

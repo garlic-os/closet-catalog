@@ -261,6 +261,34 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 	res.sendStatus(201);
 });
 
+app.post("/api/delete-item", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+	const item_id = req.body.item_id;
+	const stmt = db.prepare(`
+		SELECT *
+		FROM items
+		WHERE item_id = ?
+	`);
+	const stmt2 = db.prepare(`
+		DELETE 
+		FROM items
+		WHERE item_id = ?
+	`);
+	
+	const result = stmt.get(item_id);
+	if(result === undefined)
+	{
+		res.sendStatus(400);
+	}
+	else{
+		stmt2.run(item_id);
+		res.sendStatus(200);
+	}
+	}
+);
 
 app.post("/api/add-container", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
