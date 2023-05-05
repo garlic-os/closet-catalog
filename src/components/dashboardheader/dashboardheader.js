@@ -5,6 +5,9 @@ import eventBus from '../../EventBus/eventbus.js'
 class ToggleBar extends React.Component {
 
     constructor() {
+        let items = false;
+        let containers = false;
+        let shelves = false;
         super()
         this.state = {isInDashboard: true}
         this.toggleBarCommandsDidMount()
@@ -61,15 +64,6 @@ class ToggleBar extends React.Component {
                 {this.state.isInDashboard===true?
                     <div> 
                         <div>
-                            <input type="checkbox" id="showitems" onChange={() => this.handleToggle("item")}></input><b> Show Items</b>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="showcontainers" onChange={() => this.handleToggle("container")}></input><b> Show Containers</b>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="showshelves" onChange={() => this.handleToggle("shelf")}></input><b> Show Shelves</b>
-                        </div>
-                        <div>
                             <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
                         </div>
                         <div>
@@ -92,6 +86,7 @@ class DashboardHeader extends React.Component {
     constructor(props) {
         super(props);
         this.state = {isInDashboard: true, username: ""};
+        this.getUsername();
     }
 
     componentDidMount() {

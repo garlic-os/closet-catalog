@@ -260,6 +260,16 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 	res.sendStatus(201);
 });
 
+/* retrieves item data and sends back to frontend in a formdata object
+	request must be made with at least the itemid supplied
+*/
+app.get("/api/item-display", upload.none(), async (req, res) => {
+	const item_id = req.query.item_id;
+	console.log(item_id);
+	const shelf_id = req.query.shelf_id;
+	const container_id = req.query.container_id;
+	// if (shelf_id != null)//look for item on given shelf
+	// {
 
 app.post("/api/add-container", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
@@ -344,4 +354,3 @@ function validateToken(token) {
 		});
 	}
 })();
-
