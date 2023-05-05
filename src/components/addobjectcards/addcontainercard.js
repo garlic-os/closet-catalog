@@ -4,7 +4,7 @@ import eventBus from '../../EventBus/eventbus.js';
 import * as config from "../../config.js";
 
 function AddContainerCard () {
-    const containerAttributes = ['ID', 'Size', 'Material'];
+    const containerAttributes = [{id: 'ID', size: 'Size', material: 'Material'}];//THIS IS WHAT ADDITEMCARD.JS LOOKS LIKE I DONT KNOW IF THIS WORKS
 
     const handleButton = () => {
         eventBus.dispatch("cancel adding container", {message: "cancel adding container"});

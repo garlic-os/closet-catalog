@@ -61,15 +61,6 @@ class ToggleBar extends React.Component {
                 {this.state.isInDashboard===true?
                     <div> 
                         <div>
-                            <input type="checkbox" id="showitems" onChange={() => this.handleToggle("item")}></input><b> Show Items</b>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="showcontainers" onChange={() => this.handleToggle("container")}></input><b> Show Containers</b>
-                        </div>
-                        <div>
-                            <input type="checkbox" id="showshelves" onChange={() => this.handleToggle("shelf")}></input><b> Show Shelves</b>
-                        </div>
-                        <div>
                             <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
                         </div>
                         <div>
