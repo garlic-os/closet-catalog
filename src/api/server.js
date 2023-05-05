@@ -147,8 +147,11 @@ app.get("/api/closets", (req, res) => {
  * @property {DashboardShelf[]} shelves
  */
 
-// Get the shelves, containers, and items in a closet
-// Sends back a DashboardCloset object
+/**
+ * Consolidate a user's closet data into a single object
+ * @param {string} token
+ * @returns {DashboardCloset}
+ */
 app.get("/api/closet/:closetID", (req, res) => {
 	// if (!validateToken(req.headers.authorization)) {
 	// 	res.status(401).json({ error: "Invalid session token" });
@@ -156,40 +159,41 @@ app.get("/api/closet/:closetID", (req, res) => {
 	// }
 	console.log("hi");
 	const closetID = req.params.closetID;
-	const belongsToRelations = db.prepare(`
-		SELECT shelf_id, container_id
-		FROM belongs_to
+	const closetName = db.prepare(`
+		SELECT name
+		FROM closets
+		WHERE closet_id = ?
+	`).pluck().get(closetID);
+	const shelves = db.prepare(`
+		SELECT shelf_id, name, size, units
+		FROM shelves
 		WHERE closet_id = ?
 	`).all(closetID);
-	console.log("test");
-	const items = db.prepare(`
-		SELECT *
-		FROM items
-		WHERE item_id IN (
-			SELECT item_id
-			FROM contains_item
-			WHERE shelf_id IN (
-				SELECT shelf_id
-				FROM Belongs_To
-				WHERE closet_id = ?
-			) OR container_id IN (
-				SELECT container_id
-				FROM Belongs_To
-				Where closet_id = ?
+	for (const shelf of shelves) {
+		shelf.containers = db.prepare(`
+			SELECT container_id, name, size, units
+			FROM containers
+			WHERE shelf_id = ?
+		`).all(shelf.shelf_id);
+		// Get shelf's items from its Contains_Item table
+		shelf.items = db.prepare(`
+			SELECT item_id, name, count, description, photo_url, expiration_date
+			FROM items
+			WHERE item_id IN (
+				SELECT item_id
+				FROM Contains_Item
+				WHERE shelf_id = ?
 			)
-		)
-	`).all(closetID, closetID);
+		`).all(shelf.shelf_id);
+	}
 	const closet = {
 		closet_id: closetID,
-		name: db.prepare("SELECT name FROM closets WHERE closet_id = ?").pluck().get(closetID),
-		shelves: belongsToRelations.shelf_id,
-		containers: belongsToRelations.container_id,
-		items: items
+		name: closetName,
+		shelves
 	};
 	console.log(closet);
 	res.send(closet);
 });
-
 
 
 /**
@@ -248,15 +252,10 @@ app.post("/api/add-shelf", upload.none(), (req, res) => {
 	}
 
 	const { name, size, units, closet_id } = req.body;
-	const result = db.prepare(`
-		INSERT INTO shelves (name, size, units)
-		VALUES (?, ?, ?)
-	`).run(name, size, units);
-
 	db.prepare(`
-		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
-		VALUES (?, ?, NULL)
-	`).run(closet_id, result.lastInsertRowid);
+		INSERT INTO shelves (name, size, units, closet_id)
+		VALUES (?, ?, ?, ?)
+	`).run(name, size, units, parseInt(closet_id));
 
 	res.sendStatus(201);
 });
@@ -325,15 +324,10 @@ app.post("/api/add-container", upload.none(), (req, res) => {
 	}
 
 	const { name, size, units, closet_id, shelf_id } = req.body;
-	const result = db.prepare(`
-		INSERT INTO containers (name, size, units)
-		VALUES (?, ?, ?)
-	`).run(name, size, units);
-
 	db.prepare(`
-		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
+		INSERT INTO containers (name, size, units, shelf_id)
 		VALUES (?, ?, ?)
-	`).run(closet_id, shelf_id, result.lastInsertRowid);
+	`).run(name, size, units, parseInt(shelf_id));
 
 	res.sendStatus(201);
 });
@@ -343,7 +337,7 @@ app.get("/api/search", (req, res) => {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
-	const query = req.query.q;
+	const query = parseInt(req.query.q);
 	const matches = [];
 	matches.concat(
 		db.prepare(`

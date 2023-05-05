@@ -194,9 +194,9 @@ class Dashboard extends React.Component {
         return (
             <div id="dashboard">
                 <DashboardHeader />
-                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard /> }
-                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard /> }
-                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard /> }
+                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard closetData={this.state.closetData} /> }
+                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard closetData={this.state.closetData} /> }
+                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard closetData={this.state.closetData} /> }
                 {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
