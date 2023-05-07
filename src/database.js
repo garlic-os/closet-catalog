@@ -58,9 +58,15 @@ db.exec(`
         PRIMARY KEY     (item_id, container_id, shelf_id)
     );
 
+    CREATE TABLE IF NOT EXISTS belongsTo (
+        closet_id       INTEGER REFERENCES closets(closet_id) ON DELETE CASCADE,
+        shelf_id        INTEGER REFERENCES shelves(shelf_id) ON DELETE CASCADE,
+        container_id    INTEGER REFERENCES containers(container_id) ON DELETE CASCADE
+    );
+
     CREATE TABLE IF NOT EXISTS Owns (
         user_id         INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
-        closet_id       INTEGER REFERENCES closet(closet_id) ON DELETE CASCADE,
+        closet_id       INTEGER REFERENCES closets(closet_id) ON DELETE CASCADE,
         PRIMARY KEY     (user_id, closet_id)
     );
 `);

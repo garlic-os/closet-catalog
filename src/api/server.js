@@ -57,6 +57,18 @@ app.post("/api/register", upload.none(), async (req, res) => {
 		VALUES (?, ?)
 	`).run(user_id, token);
 
+	const closetID = db.prepare(`
+		SELECT closet_id
+		FROM closets
+		Where user_id = ?
+	`).get(user_id);
+	console.log(closetID);
+
+	db.prepare(`
+		INSERT INTO Owns (user_id, closet_id)
+		VALUES (?, ?)
+	`).run(user_id, closetID.closet_id);
+	
 	res.send({ token });
 });
 
@@ -157,7 +169,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 	// 	res.status(401).json({ error: "Invalid session token" });
 	// 	return;
 	// }
-	console.log("hi");
+	console.log("test");
 	const closetID = req.params.closetID;
 	const closetName = db.prepare(`
 		SELECT name
@@ -165,15 +177,24 @@ app.get("/api/closet/:closetID", (req, res) => {
 		WHERE closet_id = ?
 	`).pluck().get(closetID);
 	const shelves = db.prepare(`
-		SELECT shelf_id, name, size, units
+		SELECT *
 		FROM shelves
-		WHERE closet_id = ?
+		WHERE shelf_id IN (
+			SELECT shelf_id
+			FROM belongsTo
+			Where closet_id = ?
+			)
 	`).all(closetID);
+	console.log(shelves);
 	for (const shelf of shelves) {
 		shelf.containers = db.prepare(`
 			SELECT container_id, name, size, units
 			FROM containers
-			WHERE shelf_id = ?
+			WHERE container_id IN (
+				SELECT container_id
+				FROM belongsTo
+				where shelf_id = ?
+			)
 		`).all(shelf.shelf_id);
 		// Get shelf's items from its Contains_Item table
 		shelf.items = db.prepare(`
@@ -186,10 +207,13 @@ app.get("/api/closet/:closetID", (req, res) => {
 			)
 		`).all(shelf.shelf_id);
 	}
+	const containers = db.prepare(`
+	`);//unfinished
+
 	const closet = {
 		closet_id: closetID,
 		name: closetName,
-		shelves
+		shelves,
 	};
 	console.log(closet);
 	res.send(closet);
@@ -245,17 +269,31 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 });
 
 
-app.post("/api/add-shelf", upload.none(), (req, res) => {
+app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
-
-	const { name, size, units, closet_id } = req.body;
+	const closetID = req.params.closetID;
+	console.log(closetID);
+	const { name, size, units } = req.body;
+	//add shelf into shelves table
 	db.prepare(`
-		INSERT INTO shelves (name, size, units, closet_id)
-		VALUES (?, ?, ?, ?)
-	`).run(name, size, units, parseInt(closet_id));
+		INSERT INTO shelves (name, size, units)
+		VALUES (?, ?, ?)
+	`).run(name, size, units);
+	console.log("test");
+	//add shelf to user's closet
+	const shelf = db.prepare(`
+		SELECT shelf_id
+		FROM shelves
+		WHERE name = ? AND size = ? AND units = ?
+	`).get(name, size, units);
+	console.log(shelf);
+	db.prepare(`
+		INSERT INTO belongsTo (closet_id, shelf_id)
+		VALUES (?, ?)
+	`).run(closetID, shelf.shelf_id);
 
 	res.sendStatus(201);
 });
@@ -323,11 +361,11 @@ app.post("/api/add-container", upload.none(), (req, res) => {
 		return;
 	}
 
-	const { name, size, units, closet_id, shelf_id } = req.body;
+	const { name, size, units, container_id, closet_id, shelf_id } = req.body;
 	db.prepare(`
-		INSERT INTO containers (name, size, units, shelf_id)
-		VALUES (?, ?, ?)
-	`).run(name, size, units, parseInt(shelf_id));
+		INSERT INTO containers (name, size, units, container_id)
+		VALUES (?, ?, ?, ?)
+	`).run(name, size, units, parseInt(container_id));
 
 	res.sendStatus(201);
 });
