@@ -41,6 +41,9 @@ class Login extends React.Component {
         if (response.ok) {
             localStorage.setItem("token", data.token);
             this.dispatchLoginEvent();
+        } else if (response.status === 401) {
+            // Session token is invalid; delete it from local storage
+            localStorage.removeItem("token");
         } else {
             alert(data.error);
         }
