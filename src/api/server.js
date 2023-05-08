@@ -38,38 +38,19 @@ app.post("/api/register", upload.none(), async (req, res) => {
 	}
 
 	// Create the user
-	const user_id = db.prepare(`
+	const stmt = db.prepare(`
 		INSERT INTO users (username, password_hash)
 		VALUES (?, ?)
-	`).run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
-
+	`);
 
 	// Create a closet for the user
 	db.prepare(`
 		INSERT INTO closets (user_id, name)
-		VALUES (?, ?)
-	`).run(user_id, "My Closet");
+		VALUES ((SELECT user_id FROM users WHERE username = ?), ?)
+	`).run(username, "My Closet");
 
-	// Sign the user in
-	const token = crypto.randomUUID();
-	db.prepare(`
-		INSERT INTO sessions (user_id, token)
-		VALUES (?, ?)
-	`).run(user_id, token);
-
-	const closetID = db.prepare(`
-		SELECT closet_id
-		FROM closets
-		Where user_id = ?
-	`).get(user_id);
-	console.log(closetID);
-
-	db.prepare(`
-		INSERT INTO Owns (user_id, closet_id)
-		VALUES (?, ?)
-	`).run(user_id, closetID.closet_id);
-	
-	res.send({ token });
+	const user_id = stmt.run(username, await bcrypt.hash(password, 10)).lastInsertRowid;
+	res.send({ user_id });
 });
 
 // Get a username and password combination from the database;
@@ -86,10 +67,11 @@ app.post("/api/login", upload.none(), async (req, res) => {
 		return;
 	}
 	const token = crypto.randomUUID();
-	db.prepare(`
+	const stmt = db.prepare(`
 		INSERT INTO sessions (user_id, token)
 		VALUES (?, ?)
-	`).run(row.user_id, token);
+	`);
+	stmt.run(row.user_id, token);
 	res.send({ token });
 });
 
@@ -159,86 +141,54 @@ app.get("/api/closets", (req, res) => {
  * @property {DashboardShelf[]} shelves
  */
 
-/**
- * Consolidate a user's closet data into a single object
- * @param {string} token
- * @returns {DashboardCloset}
- */
+// Get the shelves, containers, and items in a closet
+// Sends back a DashboardCloset object
 app.get("/api/closet/:closetID", (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
-	console.log("test");
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
 	const closetID = req.params.closetID;
-	const closetName = db.prepare(`
-		SELECT name
-		FROM closets
+	const belongsToRelations = db.prepare(`
+		SELECT shelf_id, container_id
+		FROM belongs_to
 		WHERE closet_id = ?
-	`).pluck().get(closetID);
-	const shelves = db.prepare(`
-		SELECT *
-		FROM shelves
-		WHERE shelf_id IN (
-			SELECT shelf_id
-			FROM belongsTo
-			Where closet_id = ?
-			)
 	`).all(closetID);
-	console.log(shelves);
-	for (const shelf of shelves) {
-		shelf.containers = db.prepare(`
-			SELECT container_id, name, size, units
-			FROM containers
-			WHERE container_id IN (
-				SELECT container_id
-				FROM belongsTo
-				where shelf_id = ?
-			)
-		`).all(shelf.shelf_id);
-		// Get shelf's items from its Contains_Item table
-		shelf.items = db.prepare(`
-			SELECT item_id, name, count, description, photo_url, expiration_date
-			FROM items
-			WHERE item_id IN (
-				SELECT item_id
-				FROM Contains_Item
-				WHERE shelf_id = ?
-			)
-		`).all(shelf.shelf_id);
-	}
+	const shelves = db.prepare(`
+		SELECT shelf_id, name, size, units
+		FROM shelves
+		WHERE closet_id = ?
+	`).all(closetID);
 	const containers = db.prepare(`
-		SELECT *
+		SELECT container_id, name, size, units
 		FROM containers
-		WHERE container_id IN (
-			SELECT container_id
-			FROM belongsTo
-			WHERE closet_id = ?
-		)
-	`).all(closetID);//unfinished
-
-	for (const container of containers)
-	{
-		container.items = db.prepare(`
-			SELECT item_id, name, count, description, photo_url, expiration_date
-			FROM items
-			WHERE item_id IN (
-				SELECT item_id
-				FROM Contains_Item
-				WHERE container_id = ?
+		WHERE closet_id = ?
+	`).all(closetID);
+	const items = db.prepare(`
+		SELECT item_id, name, count, description, photo_url, expiration_date
+		FROM items
+		WHERE item_id IN (
+			SELECT item_id
+			FROM contains_item
+			WHERE shelf_id IN (
+				SELECT shelf_id
+				FROM shelves
+				WHERE closet_id = ?
 			)
-		`).all(container.container_id);
-	}
-
+		)
+	`).all(closetID);
 	const closet = {
 		closet_id: closetID,
-		name: closetName,
-		shelves,
-		containers
+		name: db.prepare("SELECT name FROM closets WHERE closet_id = ?").pluck().get(closetID),
+		shelves: shelves.map(shelf => ({
+			...shelf,
+			containers: containers.filter(container => container.shelf_id === shelf.shelf_id),
+			items: items.filter(item => belongsToRelations.find(relation => relation.shelf_id === shelf.shelf_id && relation.container_id === null).item_id === item.item_id)
+		}))
 	};
-	console.log(closet);
 	res.send(closet);
 });
+
 
 
 /**
@@ -290,154 +240,56 @@ app.post("/api/add-item", upload.single("photo"), (req, res) => {
 });
 
 
-app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
+app.post("/api/add-shelf", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
-	const closetID = req.params.closetID;
-	console.log(closetID);
-	const { name, size, units } = req.body;
-	//add shelf into shelves table
-	db.prepare(`
+
+	const { name, size, units, closet_id } = req.body;
+	const result = db.prepare(`
 		INSERT INTO shelves (name, size, units)
 		VALUES (?, ?, ?)
 	`).run(name, size, units);
-	console.log("test");
-	//add shelf to user's closet
-	const shelf = db.prepare(`
-		SELECT shelf_id
-		FROM shelves
-		WHERE name = ? AND size = ? AND units = ?
-	`).get(name, size, units);
-	console.log(shelf);
+
 	db.prepare(`
-		INSERT INTO belongsTo (closet_id, shelf_id)
-		VALUES (?, ?)
-	`).run(closetID, shelf.shelf_id);
+		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
+		VALUES (?, ?, NULL)
+	`).run(closet_id, result.lastInsertRowid);
 
 	res.sendStatus(201);
 });
 
-
-app.post("/api/delete-shelf", upload.none(), (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
-	const shelf_id = req.body.shelf_id;
-	const stmt = db.prepare(`
-		SELECT *
-		FROM shelves
-		WHERE shelf_id = ?
-	`);
-	const stmt2 = db.prepare(`
-		DELETE 
-		FROM shelves
-		WHERE shelf_id = ?
-	`);
-	
-	const result = stmt.get(shelf_id);
-	if(result === undefined)
-	{
-		res.sendStatus(400);
-	}
-	else{
-		stmt2.run(shelf_id);
-		res.sendStatus(200);
-	}
-});
-
-app.post("/api/delete-container", upload.none(), (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
-	const container_id = req.body.container_id;
-	const stmt = db.prepare(`
-		SELECT *
-		FROM containers
-		WHERE container_id = ?
-	`);
-	const stmt2 = db.prepare(`
-		DELETE 
-		FROM containers
-		WHERE container_id = ?
-	`);
-	
-	const result = stmt.get(container_id);
-	if(result === undefined)
-	{
-		res.sendStatus(400);
-	}
-	else{
-		stmt2.run(container_id);
-		res.sendStatus(200);
-	}
-});
-
-app.post("/api/delete-item", upload.none(), (req, res) => {
-	const item_id = req.body.item_id;
-	const stmt = db.prepare(`
-		SELECT *
-		FROM items
-		WHERE item_id = ?
-	`);
-	const stmt2 = db.prepare(`
-		DELETE 
-		FROM items
-		WHERE item_id = ?
-	`);
-	console.log(item_id);
-	
-	const result = stmt.get(item_id);
-	if(result === undefined)
-	{
-		res.sendStatus(400);
-	}
-	else{
-		stmt2.run(item_id);
-		res.sendStatus(200);
-	}
-});
-
-app.post("/api/add-container/:closetID", upload.none(), (req, res) => {
+/* retrieves item data and sends back to frontend in a formdata object
+	request must be made with at least the itemid supplied
+*/
+app.post("/api/add-container", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
 
-	const closetID = req.params.closetID;
-
-	const { name, size, units, shelf_id } = req.body;
-	db.prepare(`
+	const { name, size, units, closet_id, shelf_id } = req.body;
+	const result = db.prepare(`
 		INSERT INTO containers (name, size, units)
 		VALUES (?, ?, ?)
 	`).run(name, size, units);
 
-	const container = db.prepare(`
-		SELECT container_id
-		FROM containers
-		WHERE name = ? AND size = ? AND units = ?
-	`).get(name, size, units);
-
-	console.log(closetID);
-	console.log(container.container_id);
-	console.log(shelf_id);
 	db.prepare(`
-		INSERT INTO belongsTo (closet_id, container_id, shelf_id)
+		INSERT INTO Belongs_To (closet_id, shelf_id, container_id)
 		VALUES (?, ?, ?)
-	`).run(closetID, container.container_id, shelf_id);
+	`).run(closet_id, shelf_id, result.lastInsertRowid);
 
 	res.sendStatus(201);
 });
+
 
 app.get("/api/search", (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
-	const query = parseInt(req.query.q);
+	const query = req.query.q;
 	const matches = [];
 	matches.concat(
 		db.prepare(`
@@ -494,4 +346,3 @@ function validateToken(token) {
 		});
 	}
 })();
-

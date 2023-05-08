@@ -5,6 +5,9 @@ import eventBus from '../../EventBus/eventbus.js'
 class ToggleBar extends React.Component {
 
     constructor() {
+        let items = false;
+        let containers = false;
+        let shelves = false;
         super()
         this.state = {isInDashboard: true}
         this.toggleBarCommandsDidMount()
@@ -79,9 +82,11 @@ class ToggleBar extends React.Component {
 }
 
 class DashboardHeader extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {isInDashboard: true, username: ""};
+        this.getUsername();
     }
 
     componentDidMount() {

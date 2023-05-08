@@ -9,7 +9,7 @@ class App extends React.Component {
     constructor() {
         super();
         // Constructor creates the loggedin state
-        this.state = { isLoggedIn: !!localStorage.getItem("token") };
+        this.state = { isLoggedIn: localStorage.getItem("token") !== null };
 
         eventBus.on("logging in", () => {
             this.setState({ isLoggedIn: true });
