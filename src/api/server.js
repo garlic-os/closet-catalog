@@ -208,12 +208,33 @@ app.get("/api/closet/:closetID", (req, res) => {
 		`).all(shelf.shelf_id);
 	}
 	const containers = db.prepare(`
-	`);//unfinished
+		SELECT *
+		FROM containers
+		WHERE container_id IN (
+			SELECT container_id
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);//unfinished
+
+	for (const container in containers)
+	{
+		containers.items = db.prepare(`
+			SELECT *
+			FROM items
+			WHERE item_id IN (
+				SELECT item_id
+				FROM Contains_Item
+				WHERE container_id = ?
+			)
+		`).all(containers.container_id);
+	}
 
 	const closet = {
 		closet_id: closetID,
 		name: closetName,
 		shelves,
+		containers
 	};
 	console.log(closet);
 	res.send(closet);

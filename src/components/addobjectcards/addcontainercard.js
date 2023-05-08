@@ -4,6 +4,20 @@ import eventBus from '../../EventBus/eventbus.js';
 import * as config from "../../config.js";
 
 
+// class containerCard extends React.Component{
+//     constructor() {
+//         super();
+//         this.state = {
+//             closetData: {}
+//         };
+//     }
+
+//     componentDidMount() {
+//         this.getShelfData();
+//     }
+
+// }
+
 async function addContainer(event) {
     event.preventDefault();  // Keep the page from reloading
     const response = await fetch(`${config.url}/api/add-container`, {
@@ -17,6 +31,29 @@ async function addContainer(event) {
         alert("Sucessfully added Container")
     }
     return false;
+}
+
+let id;
+async function getShelfData() {
+    let closets;
+    {
+        const response = await fetch('http://localhost:3001/api/closets', {
+            headers:{'authorization': localStorage.getItem('token')}
+        });
+        if (response.ok) {
+            closets = await response.json();
+        } else {
+            const data = await response.json();
+            alert(data.error);
+        }
+    }
+    const response = fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
+        method: "GET",
+        headers:{'authorization': localStorage.getItem('token')}
+    });
+    id = await (await response).json();
+    console.log("id");
+    console.log(id.shelves);
 }
 
 function AddContainerCard () {
@@ -39,11 +76,20 @@ function AddContainerCard () {
     ]
 
     // TODO: get shelves from closetData
-    let shelves = [
+    // let shelves = [
+    //     {
+    //         name: "Default Shelf",
+    //         id: 0
+    //     },
+    // ];
+    getShelfData();
+    console.log("id data");
+    console.log(id);
+    let shelves1 = [
         {
-            name: "Default Shelf",
-            id: 0
-        },
+            name : "name",//getShelfData().shelves.name,
+            ID : id
+        }
     ];
 
     const handleButton = () => {
@@ -67,7 +113,7 @@ function AddContainerCard () {
                 }
                 <select>
                     {
-                        shelves.map(({ name, id }) =>
+                        shelves1.map(({ name, id }) =>
                             <option key={count++} value={id}>{name}</option>
                         )
                     }
