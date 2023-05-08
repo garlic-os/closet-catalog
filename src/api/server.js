@@ -219,7 +219,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 
 	for (const container in containers)
 	{
-		containers.items = db.prepare(`
+		container.items = db.prepare(`
 			SELECT *
 			FROM items
 			WHERE item_id IN (
@@ -227,7 +227,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 				FROM Contains_Item
 				WHERE container_id = ?
 			)
-		`).all(containers.container_id);
+		`).all(container.container_id);
 	}
 
 	const closet = {
