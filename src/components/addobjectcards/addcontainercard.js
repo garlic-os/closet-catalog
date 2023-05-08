@@ -20,7 +20,19 @@ import * as config from "../../config.js";
 
 async function addContainer(event) {
     event.preventDefault();  // Keep the page from reloading
-    const response = await fetch(`${config.url}/api/add-container`, {
+    let closets;
+    {
+        const response = await fetch('http://localhost:3001/api/closets', {
+            headers:{'authorization': localStorage.getItem('token')}
+        });
+        if (response.ok) {
+            closets = await response.json();
+        } else {
+            const data = await response.json();
+            alert(data.error);
+        }
+    }
+    const response = await fetch(`${config.url}/api/add-container/${closets[0].closet_id}`, {
         method: "POST",
         headers: {
             "Authorization": localStorage.getItem("token")
@@ -55,6 +67,7 @@ async function getShelfData() {
     console.log("id");
     console.log(id.shelves);
 }
+getShelfData();
 
 function AddContainerCard () {
     const items = [
@@ -82,15 +95,8 @@ function AddContainerCard () {
     //         id: 0
     //     },
     // ];
-    getShelfData();
     console.log("id data");
     console.log(id);
-    let shelves1 = [
-        {
-            name : "name",//getShelfData().shelves.name,
-            ID : id
-        }
-    ];
 
     const handleButton = () => {
         eventBus.dispatch("cancel adding container");
@@ -111,10 +117,10 @@ function AddContainerCard () {
                         </div>
                     )
                 }
-                <select>
+                <select id = "shelf" name = "shelf_id">
                     {
-                        shelves1.map(({ name, id }) =>
-                            <option key={count++} value={id}>{name}</option>
+                        id.shelves.map(({ name, shelf_id }) =>
+                            <option key={count++} value={shelf_id}>{name}</option>
                         )
                     }
                 </select>

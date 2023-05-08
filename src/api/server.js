@@ -217,10 +217,10 @@ app.get("/api/closet/:closetID", (req, res) => {
 		)
 	`).all(closetID);//unfinished
 
-	for (const container in containers)
+	for (const container of containers)
 	{
 		container.items = db.prepare(`
-			SELECT *
+			SELECT item_id, name, count, description, photo_url, expiration_date
 			FROM items
 			WHERE item_id IN (
 				SELECT item_id
@@ -353,15 +353,15 @@ app.post("/api/delete-container", upload.none(), (req, res) => {
 	// 	res.status(401).json({ error: "Invalid session token" });
 	// 	return;
 	// }
-	const container_id = req.body.item_id;
+	const container_id = req.body.container_id;
 	const stmt = db.prepare(`
 		SELECT *
-		FROM items
+		FROM containers
 		WHERE container_id = ?
 	`);
 	const stmt2 = db.prepare(`
 		DELETE 
-		FROM items
+		FROM containers
 		WHERE container_id = ?
 	`);
 	
@@ -376,17 +376,58 @@ app.post("/api/delete-container", upload.none(), (req, res) => {
 	}
 });
 
-app.post("/api/add-container", upload.none(), (req, res) => {
+app.post("/api/delete-item", upload.none(), (req, res) => {
+	const item_id = req.body.item_id;
+	const stmt = db.prepare(`
+		SELECT *
+		FROM items
+		WHERE item_id = ?
+	`);
+	const stmt2 = db.prepare(`
+		DELETE 
+		FROM items
+		WHERE item_id = ?
+	`);
+	console.log(item_id);
+	
+	const result = stmt.get(item_id);
+	if(result === undefined)
+	{
+		res.sendStatus(400);
+	}
+	else{
+		stmt2.run(item_id);
+		res.sendStatus(200);
+	}
+});
+
+app.post("/api/add-container/:closetID", upload.none(), (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
 		return;
 	}
 
-	const { name, size, units, container_id, closet_id, shelf_id } = req.body;
+	const closetID = req.params.closetID;
+
+	const { name, size, units, shelf_id } = req.body;
 	db.prepare(`
-		INSERT INTO containers (name, size, units, container_id)
-		VALUES (?, ?, ?, ?)
-	`).run(name, size, units, parseInt(container_id));
+		INSERT INTO containers (name, size, units)
+		VALUES (?, ?, ?)
+	`).run(name, size, units);
+
+	const container = db.prepare(`
+		SELECT container_id
+		FROM containers
+		WHERE name = ? AND size = ? AND units = ?
+	`).get(name, size, units);
+
+	console.log(closetID);
+	console.log(container.container_id);
+	console.log(shelf_id);
+	db.prepare(`
+		INSERT INTO belongsTo (closet_id, container_id, shelf_id)
+		VALUES (?, ?, ?)
+	`).run(closetID, container.container_id, shelf_id);
 
 	res.sendStatus(201);
 });

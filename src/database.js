@@ -52,9 +52,9 @@ db.exec(`
     );
 
     CREATE TABLE IF NOT EXISTS Contains_Item (
-        item_id         INTEGER REFERENCES items(item_id),
-        container_id    INTEGER REFERENCES containers(container_id),
-        shelf_id        INTEGER REFERENCES shelves(shelf_id),
+        item_id         INTEGER REFERENCES items(item_id) ON DELETE CASCADE,
+        container_id    INTEGER REFERENCES containers(container_id) ON DELETE CASCADE,
+        shelf_id        INTEGER REFERENCES shelves(shelf_id) ON DELETE CASCADE,
         PRIMARY KEY     (item_id, container_id, shelf_id)
     );
 
