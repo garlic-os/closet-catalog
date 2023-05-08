@@ -97,7 +97,7 @@ class DashboardHeader extends React.Component {
     async getUsername() {
         // Sending a get request to the api/username endpoint and passing in session token
         // so that the server knows who it's talking to, and the server will give back the user
-        const response = await fetch('http://localhost:3001/api/username', {
+        const response = await fetch('http://localhost:3003/api/username', {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {
