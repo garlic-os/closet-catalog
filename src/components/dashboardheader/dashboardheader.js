@@ -5,9 +5,6 @@ import eventBus from '../../EventBus/eventbus.js'
 class ToggleBar extends React.Component {
 
     constructor() {
-        let items = false;
-        let containers = false;
-        let shelves = false;
         super()
         this.state = {isInDashboard: true}
         this.toggleBarCommandsDidMount()
@@ -82,11 +79,9 @@ class ToggleBar extends React.Component {
 }
 
 class DashboardHeader extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {isInDashboard: true, username: ""};
-        this.getUsername();
     }
 
     componentDidMount() {
@@ -97,7 +92,7 @@ class DashboardHeader extends React.Component {
     async getUsername() {
         // Sending a get request to the api/username endpoint and passing in session token
         // so that the server knows who it's talking to, and the server will give back the user
-        const response = await fetch('http://localhost:3003/api/username', {
+        const response = await fetch('http://localhost:3001/api/username', {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {

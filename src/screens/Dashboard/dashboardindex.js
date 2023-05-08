@@ -166,7 +166,19 @@ class Dashboard extends React.Component {
     }
 
     async getClosetData() {
-        const response = await fetch('http://localhost:3003/api/closet/:closetID', {
+        let closets;
+        {
+            const response = await fetch('http://localhost:3001/api/closets', {
+                headers:{'authorization': localStorage.getItem('token')}
+            });
+            if (response.ok) {
+                closets = await response.json();
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        }
+        const response = await fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {
@@ -179,60 +191,21 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        this.state.closetdata = {closet_id: 1, 
-                                name: "name",
-                                shelves: [
-                                    {
-                                        shelf_id: 1,
-                                        name: "shelf1",
-                                        size: 100,
-                                        units: "cm",
-                                        containers: [
-                                            {
-                                                container_id: 1,
-                                                name: "container1a",
-                                                size: 100,
-                                                units: "in",
-                                                items: [
-                                                    {},
-                                                    {},
-                                                    {}
-                                                ]                                            
-                                            },
-                                            {
-
-                                            }
-                                        ],
-                                        items: [
-                                            {}
-                                        ]
-                                    },
-                                    {},
-                                    {}
-                                ]
-                                }
-
         return (
             <div id="dashboard">
                 <DashboardHeader />
-                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard /> }
-                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard /> }
-                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard /> }
+                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard closetData={this.state.closetData} /> }
+                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard closetData={this.state.closetData} /> }
+                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard closetData={this.state.closetData} /> }
                 {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
-                    {console.log('hi')}
-                    {console.log(this.state.closetdata)}
-                    <h1>Dashboard</h1>
-
-                    <table>
-                        
-                    </table>
-
-
-                    {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
-                    {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
-                    {this.state.showingShelves && <h1>Showing Shelves</h1>}
+                        {console.log('hi')}
+                        {console.log(this.state.closetdata)}
+                        <h1>Dashboard</h1>
+                        {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
+                        {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
+                        {this.state.showingShelves && <h1>Showing Shelves</h1>}
                     </div>
                     :
                     <Container />

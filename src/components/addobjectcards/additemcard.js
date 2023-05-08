@@ -21,6 +21,31 @@ async function addItem(event) {
     return false;
 }
 
+let Cdata;
+
+async function getClosetData() {
+    let closets;
+    {
+        const response = await fetch('http://localhost:3001/api/closets', {
+            headers:{'authorization': localStorage.getItem('token')}
+        });
+        if (response.ok) {
+            closets = await response.json();
+        } else {
+            const data = await response.json();
+            alert(data.error);
+        }
+    }
+    const response = fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
+        method: "GET",
+        headers:{'authorization': localStorage.getItem('token')}
+    });
+    Cdata = await (await response).json();
+    console.log("id");
+    console.log(Cdata.shelves);
+}
+getClosetData();
+
 function AddItemCard () {
     const items = [
         {
@@ -77,10 +102,20 @@ function AddItemCard () {
                         </div>
                     )
                 }
-                <select>
+                <b>shelves: </b>
+                <select id = "shelves" name = "shelf_id">
                     {
-                        shelvesAndContainers.map(({ name, id }) =>
-                            <option key={count++} value={id}>{name}</option>
+                        Cdata.shelves.map(({ name, shelf_id }) =>
+                            <option key={count++} value={shelf_id}>{name}</option>
+                        )
+                    }
+                </select>
+                <br></br>
+                <b>containers: </b>
+                <select id = "containers" name = "container_id">
+                    {
+                        Cdata.containers.map(({ name, container_id }) =>
+                            <option key={count++} value={container_id}>{name}</option>
                         )
                     }
                 </select>
