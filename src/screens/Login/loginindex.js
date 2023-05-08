@@ -37,28 +37,32 @@ class Login extends React.Component {
             method: 'POST',
             body: new FormData(event.target),
         });
-        const body = await response.json();
+        const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", body.token);
+            localStorage.setItem("token", data.token);
             this.dispatchLoginEvent();
+        } else if (response.status === 401) {
+            // Session token is invalid; delete it from local storage
+            localStorage.removeItem("token");
         } else {
-            alert(body.error);
+            alert(data.error);
         }
     }
 
 
     async handleRegister(event) {
         event.preventDefault();
+        console.log(`${config.url}/api/register`);
         const response = await fetch(`${config.url}/api/register`, {
             method: 'POST',
             body: new FormData(event.target),
         });
-        const body = await response.json();
+        const data = await response.json();
         if (response.ok) {
-            localStorage.setItem("token", body.token);
+            localStorage.setItem("token", data.token);
             this.dispatchLoginEvent();
         } else {
-            alert(body.error);
+            alert(data.error);
         }
     }
 
@@ -67,7 +71,7 @@ class Login extends React.Component {
         return (
             <div id="login">
                 <h1>Closet Catalog</h1>
-                <p>Welcome to the ClosetCatalog! This is a database that you can access anywhere on the internet.</p>
+                <p>Welcome to the Closet Catalog! This is a database that you can access anywhere on the internet.</p>
                 
                 {(this.state.isLogin) ?
                 (<div id="card" className="center">
