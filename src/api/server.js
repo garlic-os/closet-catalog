@@ -440,6 +440,12 @@ app.post("/api/edit-container", upload.none(), (req, res) => {
 
 	const { name, size, units, shelf_id, container_id } = req.body;
 
+	console.log(name);
+	console.log(size);
+	console.log(units);
+	console.log(shelf_id);
+	console.log(container_id);
+
 	db.prepare(`
 		UPDATE containers
 		SET name = ?, size = ?, units = ?

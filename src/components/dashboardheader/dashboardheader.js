@@ -84,8 +84,6 @@ class ToggleBar extends React.Component {
         })
         if(response.ok)
         {
-            console.log("getinfo:")
-            console.log(response);
             return await (await response).json();
         }
     }
@@ -112,8 +110,6 @@ class ToggleBar extends React.Component {
         })
         if(response.ok)
         {
-            console.log("getinfo:")
-            console.log(response);
             return await (await response).json();
         }
     }
@@ -140,30 +136,22 @@ class ToggleBar extends React.Component {
         })
         if(response.ok)
         {
-            console.log("getinfo:")
-            console.log(response);
             return await (await response).json();
         }
     }
 
     async populateTotalItems() {
         this.state.totalItems = await this.getTotalItems();
-        console.log("HERE");
-        console.log(this.state.totalItems.total);
         return false
     }
 
     async populateTotalContainers() {
         this.state.totalCont = await this.getTotalContainers();
-        console.log("HERE1");
-        console.log(this.state.totalCont.total);
         return false
     }
 
     async populateTotalShelves() {
         this.state.totalShelves = await this.getTotalShelves();
-        console.log("HERE2");
-        console.log(this.state.totalShelves.total);
         return false
     }
 

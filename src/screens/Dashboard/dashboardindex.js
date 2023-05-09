@@ -50,7 +50,8 @@ class Dashboard extends React.Component {
             ismodifyingshelf: false,
             closetData: {},
             closetDataFull: {},
-            containerData: {}
+            containerData: {},
+            shelfData: {}
         };
         this.key = 0;
     }
@@ -143,9 +144,14 @@ class Dashboard extends React.Component {
         );
     }
 
-    handleContainer(c) {
+    handleContainer(c, s, n) {
         console.log("is in container container")
+        console.log(s);
         this.containerdata = c;
+        this.shelfData = {
+            shelf_id: s,
+            name: n
+        };
         eventBus.dispatch("is in container", {message: "is in container"});
     }
 
@@ -328,7 +334,7 @@ class Dashboard extends React.Component {
                                     }
                                     {
                                         shelf["containers"] && shelf["containers"].map((container) =>
-                                            <td id='container' key={this.key++}><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
+                                            <td id='container' key={this.key++}><button id='container' className='containeritem' onClick={() => this.handleContainer(container, shelf["shelf_id"], shelf["name"])}>{container["name"]}</button></td>
                                         )
                                     }
                                     </tr>
@@ -385,7 +391,7 @@ class Dashboard extends React.Component {
                         {dashboarddata}
                     </div>
                     :                    
-                    <Container data={this.containerdata} />
+                    <Container data={this.containerdata} shelf={this.shelfData} shelves={this.state.closetData["shelves"]}/>
                 }
             </div>
         )

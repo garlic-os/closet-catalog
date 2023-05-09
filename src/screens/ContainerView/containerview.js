@@ -8,6 +8,8 @@ import ModifyItem from '../../components/modifyobjectcards/modifyitem';
 class Container extends React.Component {
     constructor(props) {
         super(props);
+        this.shelves = props.shelves;
+        this.shelf = props.shelf;
         this.containerdata = props.data;
         this.title = props.title;
         this.handleItemClick()
@@ -91,7 +93,7 @@ class Container extends React.Component {
                 </div>
                 
                 {this.state.islookingatitem? <ItemCard name={this.itemdata["name"]} count={this.itemdata["count"]} type={this.itemdata["type"]} exdate={this.itemdata["expiration_date"]}/> : null}
-                {this.state.ismodifyingcontainer? <ModifyContainer name={this.containerdata["name"]} size={this.containerdata["size"]} units={this.containerdata["units"]} id={this.containerdata["container_id"]}/> : null}
+                {this.state.ismodifyingcontainer? <ModifyContainer name={this.containerdata["name"]} size={this.containerdata["size"]} units={this.containerdata["units"]} id={this.containerdata["container_id"]} shelf={this.shelf} shelves={this.shelves}/> : null}
                 {this.state.ismodifyingitem? <ModifyItem name={this.itemdata["name"]} count={this.itemdata["count"]} type={this.itemdata["type"]} exdate={this.itemdata["expiration_date"]} id={this.itemdata["item_id"]}/> : null}
                 <br></br>
                 
