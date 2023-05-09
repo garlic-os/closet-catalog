@@ -139,7 +139,7 @@ class Dashboard extends React.Component {
         }
         );
     }
-
+    
     dispatchDisplayItem() {
         eventBus.dispatch("display item", {message: "display item"});
     }

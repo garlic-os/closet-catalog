@@ -367,8 +367,84 @@ app.post("/api/delete-shelf", upload.none(), (req, res) => {
 	}
 });
 
-app.post("/api/edit-item", upload.none(), (req, res) =>{
+app.post("/api/edit-item", upload.single("photo"), (req, res) =>{
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
 	
+	const photoURL = req?.file?.path;
+
+	const {
+		itemTypeName,
+		initialCount,
+		description,
+		name,
+		expirationDate,
+		item_id,
+		container_id,
+		shelf_id,
+	} = req.body;
+	//Update Item properties
+	db.prepare(`
+		UPDATE items
+		SET type = ?, count = ?, description = ?, photo_url = ?, name = ?, expiration_date = ?
+		WHERE item_id = ?
+	`).run(itemTypeName, initialCount, description, photoURL, name, expirationDate, item_id);
+	
+	//Update Items location with given shelf and container
+	db.prepare(`
+		UPDATE Contains_Item
+		SET container_id = ?, shelf_id = ?
+		WHERE item_id = ?
+	`).run(container_id, shelf_id, item_id);
+
+	res.sendStatus(200);
+
+});
+
+app.post("/api/edit-shelf", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const { name, size, units, shelf_id } = req.body;
+
+	db.prepare(`
+		UPDATE shelves
+		SET name = ?, size = ?, units = ?
+		WHERE shelf_id = ?
+	`).run(name, size, units, shelf_id);
+
+	res.sendStatus(200);
+});
+
+app.post("/api/edit-container", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const { name, size, units, shelf_id, container_id } = req.body;
+
+	db.prepare(`
+		UPDATE containers
+		SET name = ?, size = ?, units = ?
+		WHERE container_id = ?
+	`).run(name, size, units, container_id);
+
+	//if they provide a new shelf then move the container to that shelf in the db
+	if(!(shelf_id === undefined))
+	{
+		db.prepare(`
+			UPDATE belongsTo
+			SET shelf_id = ?
+			WHERE container_id = ?
+		`).run(shelf_id, container_id);
+	}
+
+	res.sendStatus(200);
 });
 
 app.post("/api/delete-container", upload.none(), (req, res) => {
