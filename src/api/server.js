@@ -62,7 +62,7 @@ app.post("/api/register", upload.none(), async (req, res) => {
 		FROM closets
 		Where user_id = ?
 	`).get(user_id);
-	console.log(closetID);
+	console.log("[POST register]", {closetID});
 
 	db.prepare(`
 		INSERT INTO Owns (user_id, closet_id)
@@ -204,7 +204,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 			Where closet_id = ?
 			)
 	`).all(closetID);
-	console.log(shelves);
+	console.log("[GET closet]", {shelves});
 	for (const shelf of shelves) {
 		shelf.containers = db.prepare(`
 			SELECT container_id, name, size, units
@@ -255,7 +255,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 		shelves,
 		containers
 	};
-	console.log(closet);
+	console.log("[GET closet]", {closet});
 	res.send(closet);
 });
 
@@ -316,21 +316,20 @@ app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
 		return;
 	}
 	const closetID = req.params.closetID;
-	console.log(closetID);
+	console.log("[POST add-shelf]", {closetID});
 	const { name, size, units } = req.body;
 	//add shelf into shelves table
 	db.prepare(`
 		INSERT INTO shelves (name, size, units)
 		VALUES (?, ?, ?)
 	`).run(name, size, units);
-	console.log("test");
 	//add shelf to user's closet
 	const shelf = db.prepare(`
 		SELECT shelf_id
 		FROM shelves
 		WHERE name = ? AND size = ? AND units = ?
 	`).get(name, size, units);
-	console.log(shelf);
+	console.log("[POST add-shelf]", {shelf});
 	db.prepare(`
 		INSERT INTO belongsTo (closet_id, shelf_id)
 		VALUES (?, ?)
@@ -341,10 +340,10 @@ app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
 
 
 app.post("/api/delete-shelf", upload.none(), (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
 	const shelf_id = req.body.shelf_id;
 	const stmt = db.prepare(`
 		SELECT *
@@ -412,7 +411,7 @@ app.post("/api/delete-item", upload.none(), (req, res) => {
 		FROM items
 		WHERE item_id = ?
 	`);
-	console.log(item_id);
+	console.log("[POST delete-item]", {item_id});
 	
 	const result = stmt.get(item_id);
 	if(result === undefined)
@@ -445,9 +444,7 @@ app.post("/api/add-container/:closetID", upload.none(), (req, res) => {
 		WHERE name = ? AND size = ? AND units = ?
 	`).get(name, size, units);
 
-	console.log(closetID);
-	console.log(container.container_id);
-	console.log(shelf_id);
+	console.log("[POST add-container]", {closetID, container, shelf_id});
 	db.prepare(`
 		INSERT INTO belongsTo (closet_id, container_id, shelf_id)
 		VALUES (?, ?, ?)

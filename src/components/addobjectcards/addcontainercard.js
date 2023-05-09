@@ -65,8 +65,7 @@ async function getShelfData() {
         headers:{'authorization': localStorage.getItem('token')}
     });
     id = await (await response).json();
-    console.log("id");
-    console.log(id.shelves);
+    console.log("[AddContainerCard.getShelfData] id.shelves:", id.shelves);
 }
 getShelfData();
 
@@ -96,8 +95,7 @@ function AddContainerCard () {
     //         id: 0
     //     },
     // ];
-    console.log("id data");
-    console.log(id);
+    console.log("[AddContainerCard]", {id});
 
     const handleButton = () => {
         eventBus.dispatch("cancel adding container");
