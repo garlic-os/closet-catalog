@@ -16,6 +16,7 @@ class TableItem extends React.Component {
         return (
             <div id="tableitem" onClick={() => this.handleClickingOnItem(this.props.title)}>
                 <p>{this.props.title}</p>
+                <h1>HI</h1>
             </div>
         )
     }

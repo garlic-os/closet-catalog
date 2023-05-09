@@ -11,3 +11,26 @@
     width: 10%;
     height: 50px;
 }
+
+div#containertable {
+    background-color: rgb(202, 233, 233);
+    border: 3px solid rgb(16, 164, 164);
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    height: 50vh;
+}
+
+div#containerviewitem {
+    background-color: rgb(235, 243, 243);
+    border: 3px solid rgb(16, 164, 164);
+    display: inline-block;
+    width: 20%;
+    height: 25%;
+    margin: 10px;
+}
+
+div#containerviewitem:hover {
+    transition: .3s;
+    box-shadow: 0px 0px 5px black;
+}

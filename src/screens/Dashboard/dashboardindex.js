@@ -132,9 +132,9 @@ class Dashboard extends React.Component {
         );
     }
 
-    handleContainer(container) {
+    handleContainer(c) {
         console.log("is in container container")
-        this.containerdata = container;
+        this.containerdata = c;
         eventBus.dispatch("is in container", {message: "is in container"});
     }
 
@@ -290,7 +290,7 @@ class Dashboard extends React.Component {
                                     }
                                     {shelf["containers"] && shelf["containers"].map((container) => {
                                         return (
-                                            <td id='container'><button id='container' className='containeritem'>{container["name"]}</button></td>
+                                            <td id='container'><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
                                         );
                                     })
                                     }
@@ -343,7 +343,7 @@ class Dashboard extends React.Component {
                         {dashboarddata}
                     </div>
                     :                    
-                    <Container data={this.containerdata} title="hi"/>
+                    <Container data={this.containerdata}/>
                 }
             </div>
         )
