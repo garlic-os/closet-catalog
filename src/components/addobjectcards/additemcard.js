@@ -15,9 +15,11 @@ async function addItem(event) {
     });
     if (response.ok) {
         const data = response.json();
+        
         alert("Sucessfully added Item")
         // TODO: update interface
     }
+    
     return false;
 }
 

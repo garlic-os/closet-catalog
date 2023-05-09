@@ -26,6 +26,7 @@ async function addShelf(event) {
         body: new FormData(event.target)
     });
     if (response.ok) {
+        window.location.reload();
         alert("Sucessfully added Shelf")
     }
     return false;

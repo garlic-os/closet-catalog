@@ -40,6 +40,7 @@ async function addContainer(event) {
         body: new FormData(event.target)
     });
     if (response.ok) {
+        window.location.reload();
         alert("Sucessfully added Container")
     }
     return false;
