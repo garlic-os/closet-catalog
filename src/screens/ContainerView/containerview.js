@@ -85,7 +85,7 @@ class Container extends React.Component {
                         return (
                         <div id="containerviewitem" onClick={() => this.handleItemClick(item)}>
                             <h4>{item["name"]}</h4>
-                            <img src={item["photo_url"] && "../../../"+item["photo_url"].slice(7)} alt="No Picture" height="50px"></img>
+                            <img src={item.photo_url.replace("public", "")} alt="No Picture" height="50px" />
                             <br></br>
                         </div>
                         );
