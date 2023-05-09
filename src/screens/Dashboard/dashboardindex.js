@@ -234,6 +234,10 @@ class Dashboard extends React.Component {
                 containers: [],
                 items: []
             };
+            if (shelf.name.toLowerCase().includes(query)) {
+                filteredCloset.shelves.push(shelf);
+                continue;
+            }
             for (const container of shelf.containers) {
                 if (container.name.toLowerCase().includes(query)) {
                     filteredShelf.containers.push(container);
@@ -244,7 +248,7 @@ class Dashboard extends React.Component {
                     filteredShelf.items.push(item);
                 }
             }
-            if (filteredShelf.containers.length > 0 || filteredShelf.items.length > 0) {
+            if (filteredShelf.containers.length > 0 || filteredShelf.items.length > 0 || shelf.name.toLowerCase().includes(query)) {
                 filteredCloset.shelves.push(filteredShelf);
             }
         }
