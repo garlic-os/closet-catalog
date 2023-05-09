@@ -172,24 +172,21 @@ class ToggleBar extends React.Component {
             <div id="togglebar">
                 {this.state.isInDashboard===true?
                     <div>
-                        <div>
-                            <p id="total items" onLoad={this.populateTotalItems()}>total items: {this.state.totalItems.total}</p>
-                        </div>
-                        <div>
-                            <p id="total containers" onLoad={this.populateTotalContainers()}>total containers: {this.state.totalCont.total}</p>
-                        </div>
-                        <div>
-                            <p id="total shelves" onLoad={this.populateTotalShelves()}>total shelves: {this.state.totalShelves.total}</p>    
-                        </div> 
-                        <div>
+                        <div id="clump">
                             <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
                         </div>
-                        <div>
+                        <div id="clump">
                             <button type="button" onClick={() => this.handleButton("container")}>Insert Containers</button>
                         </div>
-                        <div>
+                        <div id="clump">
                             <button type="button" onClick={() => this.handleButton("shelf")}>Insert Shelf</button>
                         </div>
+                        <br></br>
+                        <div id="clump">
+                            <p id="total items" onLoad={this.populateTotalItems()}>total items: {this.state.totalItems.total}</p>
+                            <p id="total containers" onLoad={this.populateTotalContainers()}>total containers: {this.state.totalCont.total}</p>
+                            <p id="total shelves" onLoad={this.populateTotalShelves()}>total shelves: {this.state.totalShelves.total}</p>    
+                        </div>                         
                     </div>
                     :
                     <button type="button" onClick={() => this.handleBackButton()}> {"<"} Back</button>

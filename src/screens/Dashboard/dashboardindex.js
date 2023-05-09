@@ -238,7 +238,7 @@ class Dashboard extends React.Component {
             throw new Error(data.error);
         }
     }
-
+//
     async componentDidMount() {
         const closetData = await this.getClosetData();
         this.setState({

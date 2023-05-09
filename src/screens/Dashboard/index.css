@@ -73,3 +73,13 @@ td#item {
     margin-top: 70px;
     width: auto;
 }
+
+div#clump p {
+    display: inline;
+    margin-left: 9%;
+    margin-right: 4%;
+}
+
+tr.shelf td {
+    
+}
