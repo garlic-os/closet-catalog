@@ -215,8 +215,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 				where shelf_id = ?
 			)
 		`).all(shelf.shelf_id);
-		for (const container of shelf.containers)
-		{
+		for (const container of shelf.containers) {
 			container.items = db.prepare(`
 				SELECT item_id, name, count, description, photo_url, expiration_date
 				FROM items
@@ -246,10 +245,9 @@ app.get("/api/closet/:closetID", (req, res) => {
 			FROM belongsTo
 			WHERE closet_id = ?
 		)
-	`).all(closetID);//unfinished
+	`).all(closetID);
 
-	for (const container of containers)
-	{
+	for (const container of containers) {
 		container.items = db.prepare(`
 			SELECT item_id, name, count, description, photo_url, expiration_date
 			FROM items
@@ -267,7 +265,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 		shelves,
 		containers
 	};
-	console.log("[GET closet]", {closet});
+	console.log("[GET closet]", {closet: JSON.stringify(closet)});
 	res.send(closet);
 });
 
