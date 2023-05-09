@@ -1,11 +1,18 @@
 import React from 'react';
 import "./index.css";
 import eventBus from '../../EventBus/eventbus.js'
+import * as config from "../../config.js";
 
 class ToggleBar extends React.Component {
     constructor() {
         super();
         this.state = {isInDashboard: true};
+        this.state = {
+            isInDashboard: true,
+            totalItems: {},
+            totalCont: {},
+            totalShelves: {}
+        };
         this.toggleBarCommandsDidMount();
         this.handleBackButton();
         this.showingContainer();
@@ -55,11 +62,125 @@ class ToggleBar extends React.Component {
         );
     }
 
+    async getTotalItems() {
+        let closets;
+        {
+            const response = await fetch('http://localhost:3001/api/closets', {
+                headers:{'authorization': localStorage.getItem('token')}
+            });
+            if (response.ok) {
+                closets = await response.json();
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        }
+        const response = await fetch(`${config.url}/api/total-items/${closets[0].closet_id}`,
+        {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem("token")
+            },
+        })
+        if(response.ok)
+        {
+            console.log("getinfo:")
+            console.log(response);
+            return await (await response).json();
+        }
+    }
+
+    async getTotalShelves() {
+        let closets;
+        {
+            const response = await fetch('http://localhost:3001/api/closets', {
+                headers:{'authorization': localStorage.getItem('token')}
+            });
+            if (response.ok) {
+                closets = await response.json();
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        }
+        const response = await fetch(`${config.url}/api/total-shelves/${closets[0].closet_id}`,
+        {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem("token")
+            },
+        })
+        if(response.ok)
+        {
+            console.log("getinfo:")
+            console.log(response);
+            return await (await response).json();
+        }
+    }
+
+    async getTotalContainers() {
+        let closets;
+        {
+            const response = await fetch('http://localhost:3001/api/closets', {
+                headers:{'authorization': localStorage.getItem('token')}
+            });
+            if (response.ok) {
+                closets = await response.json();
+            } else {
+                const data = await response.json();
+                alert(data.error);
+            }
+        }
+        const response = await fetch(`${config.url}/api/total-containers/${closets[0].closet_id}`,
+        {
+            method: "GET",
+            headers: {
+                "Authorization": localStorage.getItem("token")
+            },
+        })
+        if(response.ok)
+        {
+            console.log("getinfo:")
+            console.log(response);
+            return await (await response).json();
+        }
+    }
+
+    async populateTotalItems() {
+        this.state.totalItems = await this.getTotalItems();
+        console.log("HERE");
+        console.log(this.state.totalItems.total);
+        return false
+    }
+
+    async populateTotalContainers() {
+        this.state.totalCont = await this.getTotalContainers();
+        console.log("HERE1");
+        console.log(this.state.totalCont.total);
+        return false
+    }
+
+    async populateTotalShelves() {
+        this.state.totalShelves = await this.getTotalShelves();
+        console.log("HERE2");
+        console.log(this.state.totalShelves.total);
+        return false
+    }
+
     render() {
         return (
             <div id="togglebar">
                 {this.state.isInDashboard===true?
-                    <div> 
+                    <div>
+                        <div>
+                            <p id="total items" onLoad={this.populateTotalItems()}>total items: {this.state.totalItems.total}</p>
+                        </div>
+                        <div>
+                            <p id="total containers" onLoad={this.populateTotalContainers()}>total containers: {this.state.totalCont.total}</p>
+                        </div>
+                        <div>
+                            <p id="total shelves" onLoad={this.populateTotalShelves()}>total shelves: {this.state.totalShelves.total}</p>    
+                        </div> 
                         <div>
                             <button type="button" onClick={() => this.handleButton("item")}>Insert Item</button>
                         </div>

@@ -33,20 +33,19 @@ class Dashboard extends React.Component {
         this.handleDisplayItemUnMount()
         this.handleEditing()
         this.state = {
-                        isInsertingItem: false,
-                        isInsertingContainer: false,
-                        isInsertingShelf: false,
-                        isEditing: false,
-                        showingItems: false,
-                        showingContainers: false,
-                        showingShelves: false,
-                        showingDashboard: true,
-                        displayItem: false,
-                        closetData: {},
-                        closetDataFull: {},
-                        containerData: {}
-                    };
-        
+            isInsertingItem: false,
+            isInsertingContainer: false,
+            isInsertingShelf: false,
+            showingItems: false,
+            showingContainers: false,
+            showingShelves: false,
+            showingDashboard: true,
+            displayItem: false,
+            closetData: {},
+            closetDataFull: {},
+            containerData: {}
+        };
+        this.key = 0;
     }
 
     // Adding and Canceling for Item
@@ -241,7 +240,7 @@ class Dashboard extends React.Component {
             query = query.slice(0, -1);
         }
         if (query === "") {
-            console.debug(`[handleSearch] \"${query}\":`, this.state.closetDataFull);
+            console.debug(`[handleSearch] "${query}":`, this.state.closetDataFull);
             this.setState({ closetData: this.state.closetDataFull });
             return;
         }
@@ -275,7 +274,7 @@ class Dashboard extends React.Component {
                 filteredCloset.shelves.push(filteredShelf);
             }
         }
-        console.debug(`[handleSearch] \"${query}\":`, filteredCloset);
+        console.debug(`[handleSearch] "${query}":`, filteredCloset);
         this.setState({ closetData: filteredCloset });
     }
 
@@ -289,27 +288,26 @@ class Dashboard extends React.Component {
         let dashboarddata = <div id="tablecontainer">
             {shelfdata && shelfdata.map((shelf) => {
                 return (
-                    <div>
+                    <div key={this.key++}>
                         <table id="dashboardtable">
                             <tbody>
-                                {shelf["containers"].length === 0 && shelf["items"].length === 0? <tr id="emptyshelf"><br></br><br></br>empty</tr>:
-                                    <tr id='containersanditems'>
-                                    {shelf["items"] && shelf["items"].map((item) => {
-                                        return (
-                                            <td id='item'><button id='item' className='containeritem'>{item["name"]}</button></td>
-                                        );
-                                    })
+                                {
+                                shelf["containers"].length === 0 && shelf["items"].length === 0
+                                    ? <tr id="emptyshelf"><br></br><br></br>empty</tr>
+                                    : <tr id='containersanditems'> {
+                                        shelf["items"] && shelf["items"].map((item) =>
+                                            <td id='item' key={this.key++}><button id='item' className='containeritem'>{item["name"]}</button></td>
+                                        )
                                     }
-                                    {shelf["containers"] && shelf["containers"].map((container) => {
-                                        return (
-                                            <td id='container'><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
-                                        );
-                                    })
+                                    {
+                                        shelf["containers"] && shelf["containers"].map((container) =>
+                                            <td id='container' key={this.key++}><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
+                                        )
                                     }
                                     </tr>
                                 }
                                 <tr id={shelf["name"]} className='shelf'>
-                                    <p>{shelf["name"]}</p>
+                                    {shelf["name"]}
                                 </tr>
                             </tbody>
                         </table>
@@ -359,7 +357,7 @@ class Dashboard extends React.Component {
                         {dashboarddata}
                     </div>
                     :                    
-                    <Container data={this.containerdata}/>
+                    <Container data={this.containerdata} />
                 }
             </div>
         )
