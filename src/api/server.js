@@ -233,7 +233,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 			WHERE item_id IN (
 				SELECT item_id
 				FROM Contains_Item
-				WHERE shelf_id = ?
+				WHERE shelf_id = ? AND container_id = NULL
 			)
 		`).all(shelf.shelf_id);
 	}
