@@ -257,13 +257,13 @@ class Dashboard extends React.Component {
 
     render() {
         let testArray = ["1", "2", "3"]
-        const shelfdata = this.state.closetdata["shelves"]
+        const shelfdata =this.state.closetData["shelves"]
         shelfdata && shelfdata.reverse()
 
         console.log("AHHH")
         console.log(shelfdata)
 
-        const testinglist = Object.keys(this.state.closetdata).map((object) => {
+        const testinglist = Object.keys(this.state.closetData).map((object) => {
             return (
                 <div>
                     <p>{object}</p>
