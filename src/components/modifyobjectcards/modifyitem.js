@@ -50,6 +50,7 @@ class  ModifyItem extends React.Component {
                         <b>{name}: </b>
                         <input name={slug} type={type} />
                         <br/><br/>
+                        
                     </div>
                 )
             }

@@ -17,12 +17,14 @@ const ItemCard = (props) => {
 
     return (
         <div id="displayitem">
-            <h1>{props.name}</h1>
+            {console.log(props)}
+            <h1>Modify <br></br>{props.name}</h1>
                 <ol>
                     <li>Quantity: {props.count}</li>
                     <li>Type: {props.type}</li>
                     <li>Expiration date: {props.exdate}</li>
                 </ol>
+            <p>ID: {props.id}</p>
             <button type="button" onClick={() => handleBackButton()}>{'<'} Back</button>
             <button type="button" onClick={() => dispatchModifyItem()}>Modify</button>
         </div>

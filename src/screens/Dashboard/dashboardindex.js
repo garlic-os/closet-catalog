@@ -167,7 +167,10 @@ class Dashboard extends React.Component {
         );
     }
     
-    dispatchDisplayItem() {
+    dispatchDisplayItem(item) {
+        this.itemData = item;
+        console.log("dispatching display item");
+        console.log(this.itemData);
         eventBus.dispatch("display item", {message: "display item"});
     }
 
@@ -322,7 +325,7 @@ class Dashboard extends React.Component {
             {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div key={this.key++}>
-                        {this.state.displayItem? <ItemCard item={this.itemdata} /> : null}
+                        {this.state.displayItem? <ItemCard name={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} /> : null}
                         {this.state.ismodifyingitem? <ModifyItem item={this.itemdata} /> : null}
                         {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfInfo} /> : null}
                         <table id="dashboardtable">
@@ -332,7 +335,7 @@ class Dashboard extends React.Component {
                                     ? <tr id="emptyshelf"><br></br><br></br>empty</tr>
                                     : <tr id='containersanditems'> {
                                         shelf["items"] && shelf["items"].map((item) =>
-                                            <td id='item' key={this.key++}><button id='item' className='containeritem' onClick={() => this.dispatchDisplayItem()}>{item["name"]}</button></td>
+                                            <td id='item' key={this.key++}><button id='item' className='containeritem' onClick={() => this.dispatchDisplayItem(item)}>{item["name"]}</button></td>
                                         )
                                     }
                                     {
