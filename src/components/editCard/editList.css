@@ -3,8 +3,8 @@
     top: 20%;
 }
 
-#displayitem {
-    width: 300px;
+#editcard {
+    width: 500px;
     margin: auto;
     background-color: rgb(176, 176, 176);
     vertical-align: middle;
@@ -14,13 +14,13 @@
     border-radius: 40px;
     position: absolute;
     top: 20%;
-    left: 40%;
-    right: 40%;
+    left: 30%;
+    right: 30%;
 }
 
-button {
-    margin-left: 5%;
-    margin-right: 5%;
+.button {
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .grayedout {

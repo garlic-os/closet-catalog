@@ -7,7 +7,6 @@ import AddContainerCard from '../../components/addobjectcards/addcontainercard.j
 import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
 import ItemCard from '../../components/itemcard/itemcard.js';
-import editList from '../../components/editCard/editList.js';
 
 
 function isAlphaNumeric(keyCode) {
@@ -32,6 +31,7 @@ class Dashboard extends React.Component {
         this.dispatchDisplayItem()
         this.handleDisplayItem()
         this.handleDisplayItemUnMount()
+        this.handleEditing()
         this.state = {
                         isInsertingItem: false,
                         isInsertingContainer: false,
@@ -56,6 +56,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingShelf: false}));
             this.setState(prevState => ({displayItem: false}));
+            this.setState(prevState => ({isEditing: false}));            
             }
         );
     }
@@ -73,6 +74,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingShelf: false}));
             this.setState(prevState => ({isInsertingItem:false}));
             this.setState(prevState => ({displayItem: false}));
+            this.setState(prevState => ({isEditing: false}));            
         }
         );
     }
@@ -91,6 +93,7 @@ class Dashboard extends React.Component {
             this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingItem:false}));
             this.setState(prevState => ({displayItem: false}));
+            this.setState(prevState => ({isEditing: false}));            
         }
         );
     }
@@ -167,15 +170,28 @@ class Dashboard extends React.Component {
     handleDisplayItemUnMount() {
         eventBus.on("cancel display item", (data) => {
             console.log("HERE");
-            this.setState(prevState => ({displayItem: false}));
+            this.setState(prevState => ({displayItem: false}));            
         }
         );
     }
 
     handleEditing() {
-        eventBus.dispatch("is editing", {message: "is editing"});
-        this.setState(prevState => {isEditing = true});
+        eventBus.on("modify item", (data) => {
+            this.setState(prevState => ({isEditing: true}));
+            this.setState(prevState => ({isInsertingShelf: false}));
+            this.setState(prevState => ({isInsertingContainer: false}));
+            this.setState(prevState => ({isInsertingItem:false}));
+            this.setState(prevState => ({displayItem: false}));
+        }        
+        )
     }
+
+    cancelEdit() {
+        eventBus.on("cancel modify item", (data) => {
+            this.setState(prevState => ({isEditing: false}));
+        }
+        );
+    }    
 
     async getClosetData() {
         let closets;
@@ -264,11 +280,12 @@ class Dashboard extends React.Component {
     }
 
     render() {
-        const shelfdata = this.state.closetData["shelves"];
+        let shelfdata = this.state.closetData["shelves"];
+        let myname = "JOHN";
         shelfdata && shelfdata.reverse();
 
         console.log("[Dashboard]", {shelfdata});
-
+        console.log("--------------------");
         let dashboarddata = <div id="tablecontainer">
             {shelfdata && shelfdata.map((shelf) => {
                 return (
@@ -335,14 +352,6 @@ class Dashboard extends React.Component {
                     !(this.state.isEditing)&&
                     (this.state.displayItem) &&
                     <ItemCard />
-                }
-                {
-                    (this.state.isEditing) &&
-                    !(this.state.isInsertingShelf) &&
-                    !(this.state.isInsertingItem) &&
-                    !(this.state.isInsertingContainer) &&
-                    !(this.state.displayItem) &&
-                    <editList closetData={this.state.closetData} />
                 }
                 {this.state.showingDashboard?
                     <div>

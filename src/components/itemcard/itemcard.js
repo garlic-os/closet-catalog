@@ -9,6 +9,10 @@ const ItemCard = (props) => {
         eventBus.dispatch("cancel display item", {message: "cancel display item"});
     }
 
+    const dispatchModifyItem = () => {
+        eventBus.dispatch("modify item", {message: "modify item"});
+    }
+
     return (
         <div id="displayitem">
             <h1>{props.name}</h1>
@@ -18,6 +22,7 @@ const ItemCard = (props) => {
                     <li>Expiration date: {props.exdate}</li>
                 </ol>
             <button type="button" onClick={() => handleBackButton()}>{'<'} Back</button>
+            <button type="button" onClick={() => dispatchModifyItem()}>Modify</button>
         </div>
     )
 }

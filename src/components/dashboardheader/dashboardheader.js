@@ -19,7 +19,7 @@ class ToggleBar extends React.Component {
         } else if (type === "shelf") {
             eventBus.dispatch("adding shelf", {message: "adding shelf"});
         } else if (type === "modify") {
-            eventBus.dispatch("modifying on dashboard", {message: "modifying on dashboard"});
+            eventBus.dispatch("modify item", {message: "modifying on dashboard"});
         }
     }
 
@@ -68,9 +68,6 @@ class ToggleBar extends React.Component {
                         </div>
                         <div>
                             <button type="button" onClick={() => this.handleButton("shelf")}>Insert Shelf</button>
-                        </div>
-                        <div>
-                            <button type="button" onClick={() => this.handleButton("modify")}>Modify</button>
                         </div>
                     </div>
                     :

@@ -3,7 +3,7 @@
     top: 20%;
 }
 
-#displayitem {
+#modifycontainer {
     width: 300px;
     margin: auto;
     background-color: rgb(176, 176, 176);
@@ -18,9 +18,9 @@
     right: 40%;
 }
 
-button {
-    margin-left: 5%;
-    margin-right: 5%;
+.button {
+    margin-left: 2%;
+    margin-right: 2%;
 }
 
 .grayedout {
