@@ -326,7 +326,7 @@ class Dashboard extends React.Component {
                 return (
                     <div key={this.key++}>
                         {this.state.displayItem? <ItemCard name={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} /> : null}
-                        {this.state.ismodifyingitem? <ModifyItem item={this.itemdata} /> : null}
+                        {this.state.ismodifyingitem? <ModifyItem item={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} /> : null}
                         {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfInfo} /> : null}
                         <table id="dashboardtable">
                             <tbody>

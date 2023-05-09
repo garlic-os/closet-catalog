@@ -55,6 +55,7 @@ class  ModifyItem extends React.Component {
                 )
             }
             </form>
+            <p>Item ID: {this.props.id}</p>
             <button className="button" type="button" onClick={() =>this.handleButton()}>Cancel</button>
             <button className="button" type="button">Delete</button>
             <input className="button" type="submit" value="Submit Changes" />
