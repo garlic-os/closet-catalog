@@ -105,7 +105,7 @@ function AddItemCard () {
                     )
                 }
                 <b>shelves: </b>
-                <select id = "shelves" name = "shelf_id">
+                <select id="shelves" name="shelf_id">
                     {
                         Cdata.shelves.map(({ name, shelf_id }) =>
                             <option key={count++} value={shelf_id}>{name}</option>
@@ -114,7 +114,7 @@ function AddItemCard () {
                 </select>
                 <br></br>
                 <b>containers: </b>
-                <select id = "containers" name = "container_id">
+                <select id="containers" name="container_id">
                     {
                         Cdata.containers.map(({ name, container_id }) =>
                             <option key={count++} value={container_id}>{name}</option>
