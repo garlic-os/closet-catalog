@@ -457,6 +457,83 @@ app.post("/api/add-container/:closetID", upload.none(), (req, res) => {
 	res.sendStatus(201);
 });
 
+app.get("/api/total-items/:closetID", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const closetID = req.params.closetID;
+
+	const shelves = db.prepare(`
+		SELECT shelf_id
+		FROM shelves
+		WHERE EXISTS (
+			SELECT shelf_id
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	let shelfCount;
+	let total = 0;
+	for (const shelf of shelves)
+	{
+		shelfCount = db.prepare(`
+			SELECT COUNT(item_id)
+			FROM items
+			WHERE item_id IN (
+				SELECT item_id
+				FROM Contains_Item
+				WHERE shelf_id = ?
+			)
+		`).all(shelf.shelf_id);
+		total += shelfCount[0]["COUNT(item_id)"];
+	}
+	let response = {
+		total: total
+	};
+	res.send(response);
+})
+
+app.get("/api/total-containers/:closetID", upload.none(), (req, res) => {
+	const closetID = req.params.closetID;
+	const containers = db.prepare(`
+		SELECT COUNT(container_id)
+		FROM containers
+		WHERE EXISTS (
+			SELECT container_id  
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	const total = containers[0]["COUNT(container_id)"]- 1;//subtracting for the "no container" container
+	let response = {
+		total: total
+	};
+	res.send(response);
+});
+
+app.get("/api/total-shelves/:closetID", upload.none(), (req, res) => {
+	const closetID = req.params.closetID;
+	const shelves = db.prepare(`
+		SELECT COUNT(shelf_id)
+		FROM shelves
+		WHERE EXISTS (
+			SELECT shelf_id  
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	const total = shelves[0]["COUNT(shelf_id)"] - 1;//subtracting for the "floor" shelf
+	let response = {
+		total: total
+	};
+	res.send(response);
+});
+
 app.get("/api/search", (req, res) => {
 	if (!validateToken(req.headers.authorization)) {
 		res.status(401).json({ error: "Invalid session token" });
@@ -519,4 +596,3 @@ function validateToken(token) {
 		});
 	}
 })();
-
