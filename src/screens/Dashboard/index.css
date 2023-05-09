@@ -45,7 +45,7 @@ button#item {
 }
 
 td#container {
-    width: 10%;
+    width: auto;
 }
 
 button#container {
