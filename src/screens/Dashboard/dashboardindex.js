@@ -36,7 +36,8 @@ class Dashboard extends React.Component {
                         showingDashboard: true,
                         displayItem: false,
                         closetData: {},
-                        closetDataFull: {}
+                        closetDataFull: {},
+                        containerData: {}
                     };
         
     }
@@ -126,15 +127,16 @@ class Dashboard extends React.Component {
         );
     }
 
-    handleContainer() {
-        console.log("adding container")
+    handleContainer(container) {
+        console.log("is in container container")
+        this.containerdata = container;
         eventBus.dispatch("is in container", {message: "is in container"});
     }
 
     containerDidMount() {
         eventBus.on("is in container", (data) => {
             this.setState(prevState =>({showingDashboard:false}));
-            this.setState(prevState =>({showingContainers:false}));
+            this.setState(prevState =>({showingContainers:true}));
             this.setState(prevState =>({showingItems:false}));
             this.setState(prevState =>({showingShelves:false}));
         }
@@ -260,40 +262,24 @@ class Dashboard extends React.Component {
         const shelfdata =this.state.closetData["shelves"]
         shelfdata && shelfdata.reverse()
 
-        console.log("AHHH")
-        console.log(shelfdata)
-
-        const testinglist = Object.keys(this.state.closetData).map((object) => {
-            return (
-                <div>
-                    <p>{object}</p>
-                    {JSON.stringify(object) == "shelves"? <h1>hi</h1> : <h2>bye</h2>}
-                </div>
-            );
-        });
-
-        let myvariable = <h1>hi
-
-        </h1>
-
         let dashboarddata = <div id="tablecontainer">
                 {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div>
                         <table id="dashboardtable">
                             <tbody>
-                                {shelf["containers"].length === 0 && shelf["items"].length === 0? <tr id="emptyshelf"><br></br><br></br>empty shelf</tr>:
+                                {shelf["containers"].length === 0 && shelf["items"].length === 0? <tr id="emptyshelf"><br></br><br></br>empty</tr>:
                                     <tr id='containersanditems'>
                                     {shelf["items"] && shelf["items"].map((item) => {
                                         return (
-                                            <td><button id='item' className='containeritem'>{item["name"]}</button></td>
+                                            <td id='item'><button id='item' className='containeritem'>{item["name"]}</button></td>
                                         );
                                     })
                                     }
                                     {shelf["containers"] && shelf["containers"].map((container) => {
                                         return (
-                                            
-                                            <td id='container'><button id='container' className='containeritem'>{container["name"]}</button></td>
+
+                                            <td id='container'><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
                                         );
                                     })
                                     }
@@ -319,17 +305,11 @@ class Dashboard extends React.Component {
                 {this.state.showingDashboard?
                     <div>
                         <h1>Dashboard</h1>
-                        {/* {console.log("TESTING")}
-                        {console.log(this.state.closetdata["shelves"])}
-                        {console.log(typeof this.state.closetdata)}
-                        {console.log("HERE")}
-                        {console.log(this.state.closetdata["closet_id"])} */}
-                        {/* {console.log(closetData)} */}
                         {dashboarddata}
-
+                        
                     </div>
-                    :
-                    <Container />
+                    :                    
+                    <Container data={this.containerdata} title="hi"/>
                 }
             </div>
         )
