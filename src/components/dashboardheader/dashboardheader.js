@@ -118,8 +118,9 @@ class DashboardHeader extends React.Component {
                             <td id="middle"><h1>{this.state.username}'s Closet</h1></td>
                             <td id="right">
                                 <div>
-                                    <input type="text"></input>
-                                    <button type="submit">Search</button>
+                                    <input type="text"
+                                           placeholder="Search"
+                                           onKeyDown={this.props.handleSearch}></input>
                                 </div>
                             </td>
                         </tr>

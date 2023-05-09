@@ -35,7 +35,8 @@ class Dashboard extends React.Component {
                         showingShelves: false,
                         showingDashboard: true,
                         displayItem: false,
-                        closetdata: {}
+                        closetData: {},
+                        closetDataFull: {}
                     };
     }
 
@@ -161,10 +162,6 @@ class Dashboard extends React.Component {
         );
     }
 
-    componentDidMount() {
-        this.getClosetData();
-    }
-
     async getClosetData() {
         let closets;
         {
@@ -182,25 +179,91 @@ class Dashboard extends React.Component {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {
-            const closetdata = await response.json();
-            this.setState({ closetdata });
+            return await response.json();
         } else {
             const data = await response.json();
-            alert(data.error);
+            throw new Error(data.error);
         }
+    }
+
+    async componentDidMount() {
+        const closetData = await this.getClosetData();
+        this.setState({
+            closetData: closetData,
+            closetDataFull: closetData
+        });
+    }
+
+    /**
+     * Return a copy of closetData that contains only items, containers, and
+     * shelves that contain any attribute that includes the query
+     * 
+     * @param {string} query
+     * @returns {DashboardCloset}
+     */
+    handleSearch(event) {
+        const closetData = this.state.closetData;
+        const queryLower = event.target.value.toLowerCase();
+        if (queryLower === "") {
+            this.setState({ closetData: this.state.closetDataFull });
+            return;
+        }
+        const filteredCloset = {
+            closet_id: closetData.closet_id,
+            name: closetData.name,
+            shelves: []
+        };
+        for (const shelf of closetData.shelves) {
+            const shelfCopy = {
+                shelf_id: shelf.shelf_id,
+                name: shelf.name,
+                size: shelf.size,
+                units: shelf.units,
+                containers: [],
+                items: []
+            };
+            for (const container of shelf.containers) {
+                const containerCopy = {
+                    container_id: container.container_id,
+                    name: container.name,
+                    size: container.size,
+                    units: container.units,
+                    items: []
+                };
+                for (const item of container.items) {
+                    if (item.name.toLowerCase().includes(queryLower) ||
+                        item.description.toLowerCase().includes(queryLower)) {
+                        containerCopy.items.push(item);
+                    }
+                }
+                if (containerCopy.items.length > 0) {
+                    shelfCopy.containers.push(containerCopy);
+                }
+            }
+            for (const item of shelf.items) {
+                if (item.name.toLowerCase().includes(queryLower) ||
+                    item.description.toLowerCase().includes(queryLower)) {
+                    shelfCopy.items.push(item);
+                }
+            }
+            if (shelfCopy.containers.length > 0 || shelfCopy.items.length > 0) {
+                filteredCloset.shelves.push(shelfCopy);
+            }
+        }
+        console.debug(filteredCloset);
+        this.setState({ closetData: filteredCloset });
     }
 
     render() {
         return (
             <div id="dashboard">
-                <DashboardHeader />
+                <DashboardHeader handleSearch={this.handleSearch.bind(this)} />
                 {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard closetData={this.state.closetData} /> }
                 {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard closetData={this.state.closetData} /> }
                 {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard closetData={this.state.closetData} /> }
                 {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
                 {this.state.showingDashboard?
                     <div>
-                        {console.log('hi')}
                         <h1>Dashboard</h1>
                         {this.state.showingItems && <div><h1>Showing Items</h1><button type="button" onClick={() => this.dispatchDisplayItem()}>Dummy Item</button></div>}
                         {this.state.showingContainers && <div><h1>Showing Containers</h1><button type="button" onClick={() => this.handleContainer()}>Dummy Container</button></div>}
