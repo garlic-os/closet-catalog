@@ -277,7 +277,7 @@ class Dashboard extends React.Component {
         </h1>
 
         let dashboarddata = <div id="tablecontainer">
-                {shelfdata && shelfdata.map((shelf) => {
+            {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div>
                         <table id="dashboardtable">
@@ -292,7 +292,6 @@ class Dashboard extends React.Component {
                                     }
                                     {shelf["containers"] && shelf["containers"].map((container) => {
                                         return (
-                                            
                                             <td id='container'><button id='container' className='containeritem'>{container["name"]}</button></td>
                                         );
                                     })
@@ -306,7 +305,7 @@ class Dashboard extends React.Component {
                         </table>
                     </div>
                 );
-                })}
+            })}
         </div> 
 
         return (
@@ -326,7 +325,6 @@ class Dashboard extends React.Component {
                         {console.log(this.state.closetdata["closet_id"])} */}
                         {/* {console.log(closetData)} */}
                         {dashboarddata}
-
                     </div>
                     :
                     <Container />

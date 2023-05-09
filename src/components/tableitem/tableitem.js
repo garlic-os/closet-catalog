@@ -3,7 +3,6 @@ import './tableitem.css';
 import eventBus from '../../EventBus/eventbus';
 
 class TableItem extends React.Component {
-
     constructor(props) {
         super(props)
         this.handleClickingOnItem()
