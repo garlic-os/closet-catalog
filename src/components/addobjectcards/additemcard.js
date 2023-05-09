@@ -24,7 +24,6 @@ async function addItem(event) {
 }
 
 
-        },
 class AddItemCard extends React.Component {
     constructor(props) {
         super(props);
