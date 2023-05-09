@@ -7,6 +7,7 @@ import AddContainerCard from '../../components/addobjectcards/addcontainercard.j
 import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
 import ItemCard from '../../components/itemcard/itemcard.js';
+import editList from '../../components/editCard/editList.js';
 
 
 function isAlphaNumeric(keyCode) {
@@ -35,6 +36,7 @@ class Dashboard extends React.Component {
                         isInsertingItem: false,
                         isInsertingContainer: false,
                         isInsertingShelf: false,
+                        isEditing: false,
                         showingItems: false,
                         showingContainers: false,
                         showingShelves: false,
@@ -170,6 +172,11 @@ class Dashboard extends React.Component {
         );
     }
 
+    handleEditing() {
+        eventBus.dispatch("is editing", {message: "is editing"});
+        this.setState(prevState => {isEditing = true});
+    }
+
     async getClosetData() {
         let closets;
         {
@@ -302,6 +309,7 @@ class Dashboard extends React.Component {
                     !(this.state.isInsertingContainer) &&
                     !(this.state.isInsertingShelf) &&
                     !(this.state.displayItem) &&
+                    !(this.state.isEditing)&&
                     <AddItemCard closetData={this.state.closetData} />
                 }
                 {
@@ -309,6 +317,7 @@ class Dashboard extends React.Component {
                     !(this.state.isInsertingItem) &&
                     !(this.state.isInsertingShelf) &&
                     !(this.state.displayItem) &&
+                    !(this.state.isEditing)&&
                     <AddContainerCard closetData={this.state.closetData} />
                 }
                 {
@@ -316,14 +325,24 @@ class Dashboard extends React.Component {
                     !(this.state.isInsertingItem) &&
                     !(this.state.isInsertingContainer) &&
                     !(this.state.displayItem) &&
+                    !(this.state.isEditing)&&
                     <AddShelfCard closetData={this.state.closetData} />
                 }
                 {
                     !(this.state.isInsertingShelf) &&
                     !(this.state.isInsertingItem) &&
                     !(this.state.isInsertingContainer) &&
+                    !(this.state.isEditing)&&
                     (this.state.displayItem) &&
                     <ItemCard />
+                }
+                {
+                    (this.state.isEditing) &&
+                    !(this.state.isInsertingShelf) &&
+                    !(this.state.isInsertingItem) &&
+                    !(this.state.isInsertingContainer) &&
+                    !(this.state.displayItem) &&
+                    <editList closetData={this.state.closetData} />
                 }
                 {this.state.showingDashboard?
                     <div>
