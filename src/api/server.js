@@ -215,6 +215,18 @@ app.get("/api/closet/:closetID", (req, res) => {
 				where shelf_id = ?
 			)
 		`).all(shelf.shelf_id);
+		for (const container of shelf.containers)
+		{
+			container.items = db.prepare(`
+				SELECT item_id, name, count, description, photo_url, expiration_date
+				FROM items
+				WHERE item_id IN (
+					SELECT item_id
+					FROM Contains_Item
+					WHERE container_id = ?
+				)
+			`).all(container.container_id)
+		}
 		// Get shelf's items from its Contains_Item table
 		shelf.items = db.prepare(`
 			SELECT item_id, name, count, description, photo_url, expiration_date
