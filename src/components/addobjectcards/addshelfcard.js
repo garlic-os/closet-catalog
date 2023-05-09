@@ -32,7 +32,7 @@ async function addShelf(event) {
     return false;
 }
 
-function AddShelfCard (props) {
+function AddShelfCard(props) {
     const items = [
         {
             name: "Name",

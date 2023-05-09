@@ -185,12 +185,11 @@ app.get("/api/closets", (req, res) => {
  * @returns {DashboardCloset}
  */
 app.get("/api/closet/:closetID", (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
-	console.log("test");
-	const closetID = req.params.closetID;
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+	const closetID = parseInt(req.params.closetID);
 	const closetName = db.prepare(`
 		SELECT name
 		FROM closets
