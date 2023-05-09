@@ -23,6 +23,10 @@ function ModifyContainer(props) {
         }
     ]
 
+    function handleButtion() {
+        eventBus.dispatch("cancel modify container");
+    }
+
     async function handleSubmit(event) {
         event.preventDefault();
         const response = await fetch(`${config.url}/api/edit-container`, {
@@ -64,7 +68,7 @@ function ModifyContainer(props) {
                 <p>ID: {props.id}</p>
                 <p>Current shelf: {props.shelf["name"]}</p>
                 <input type="hidden" value={props.id} name="container_id"></input>
-                <button className="button" type="button">Cancel</button>
+                <button className="button" type="button" onClick={()=>handleButtion()}>Cancel</button>
                 <button className="button" type="button">Delete</button>
                 <input className="button" type="submit" value="Submit Changes" />
             </form>
