@@ -271,22 +271,21 @@ class Dashboard extends React.Component {
         let dashboarddata = <div id="tablecontainer">
             {shelfdata && shelfdata.map((shelf) => {
                 return (
-                    <div>
+                    <div key={this.key++}>
                         <table id="dashboardtable">
                             <tbody>
-                                {shelf["containers"].length === 0 && shelf["items"].length === 0? <tr id="emptyshelf"><br></br><br></br>empty</tr>:
-                                    <tr id='containersanditems'>
-                                    {shelf["items"] && shelf["items"].map((item) => {
-                                        return (
-                                            <td id='item'><button id='item' className='containeritem'>{item["name"]}</button></td>
-                                        );
-                                    })
+                                {
+                                shelf["containers"].length === 0 && shelf["items"].length === 0
+                                    ? <tr id="emptyshelf"><br></br><br></br>empty</tr>
+                                    : <tr id='containersanditems'> {
+                                        shelf["items"] && shelf["items"].map((item) =>
+                                            <td id='item' key={this.key++}><button id='item' className='containeritem'>{item["name"]}</button></td>
+                                        )
                                     }
-                                    {shelf["containers"] && shelf["containers"].map((container) => {
-                                        return (
-                                            <td id='container'><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
-                                        );
-                                    })
+                                    {
+                                        shelf["containers"] && shelf["containers"].map((container) =>
+                                            <td id='container' key={this.key++}><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
+                                        )
                                     }
                                     </tr>
                                 }
