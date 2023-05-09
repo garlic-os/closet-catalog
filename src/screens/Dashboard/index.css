@@ -1,3 +1,52 @@
 #dashboard {
     background-color: #F5F5F5;
 }
+
+#tablecontainer {
+    margin-bottom: 50px;
+}
+
+#dashboardtable {
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    margin-top: 40px;
+    border: 2px solid green;
+}
+
+#dashboardtable tr.shelf {
+    background-color: rgb(181, 104, 63);
+    margin-top: 50px;
+}
+
+#dashboardtable td {
+    background-color: blue;
+    margin: 10px;
+    display: inline;
+    position: relative;
+    top: 60px;
+}
+
+tr#emptyshelf {
+    height: 8vh;
+    background-color: rgb(204, 204, 204);
+}
+
+tr#floor {
+    background-color: rgb(58, 64, 28);
+}
+
+tr#containersanditems {
+    background-color: rgb(233, 233, 233);
+    height: 10vh;
+}
+
+button#item {
+    background-color: yellow;
+    vertical-align: bottom;
+}
+
+td#container {
+    background-color: aqua;
+    height: 100px;
+}

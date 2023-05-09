@@ -15,8 +15,8 @@ async function addItem(event) {
     });
     if (response.ok) {
         const data = response.json();
-        
         alert("Sucessfully added Item")
+        window.location.reload();
         // TODO: update interface
     }
     

@@ -2,8 +2,14 @@ td {
     width: 33%;
 }
 
-table {
-    width: 100%;
+#tableheader {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#tableheader td {
+
 }
 
 #left button {

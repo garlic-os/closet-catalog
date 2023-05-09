@@ -19,22 +19,24 @@ class ToggleBar extends React.Component {
             eventBus.dispatch("adding container", {message: "adding container"});
         } else if (type === "shelf") {
             eventBus.dispatch("adding shelf", {message: "adding shelf"});
+        } else if (type === "modify") {
+            eventBus.dispatch("modifying on dashboard", {message: "modifying on dashboard"});
         }
     }
 
-    handleToggle = (type) => {
-        if (type === "item") {
-            this.items=!this.items;
-            eventBus.dispatch("showing items", {message: "showing items"});
-            document.getElementById("showitems").checked = this.items;
-        } else if (type === "container") {
-            this.containers=!this.containers;
-            eventBus.dispatch("showing containers", {message: "showing containers"});
-        } else if (type === "shelf") {
-            this.shelves=!this.shelves;
-            eventBus.dispatch("showing shelves", {message: "showing shelves"});
-        }
-    }
+    // handleToggle = (type) => {
+    //     if (type === "item") {
+    //         this.items=!this.items;
+    //         eventBus.dispatch("showing items", {message: "showing items"});
+    //         document.getElementById("showitems").checked = this.items;
+    //     } else if (type === "container") {
+    //         this.containers=!this.containers;
+    //         eventBus.dispatch("showing containers", {message: "showing containers"});
+    //     } else if (type === "shelf") {
+    //         this.shelves=!this.shelves;
+    //         eventBus.dispatch("showing shelves", {message: "showing shelves"});
+    //     }
+    // }
 
     toggleBarCommandsDidMount() {
         eventBus.on("is in dashboard", (data) => {
@@ -68,6 +70,9 @@ class ToggleBar extends React.Component {
                         </div>
                         <div>
                             <button type="button" onClick={() => this.handleButton("shelf")}>Insert Shelf</button>
+                        </div>
+                        <div>
+                            <button type="button" onClick={() => this.handleButton("modify")}>Modify</button>
                         </div>
                     </div>
                     :
@@ -108,7 +113,7 @@ class DashboardHeader extends React.Component {
     render() {
         return (
             <div id="header">
-                <table>
+                <table id='tableheader'>
                     <tbody>
                         <tr>
                             <td id="left">
