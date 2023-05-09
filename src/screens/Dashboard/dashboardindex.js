@@ -228,40 +228,24 @@ class Dashboard extends React.Component {
             shelves: []
         };
         for (const shelf of closetData.shelves) {
-            const shelfCopy = {
+            const filteredShelf = {
                 shelf_id: shelf.shelf_id,
                 name: shelf.name,
-                size: shelf.size,
-                units: shelf.units,
                 containers: [],
                 items: []
             };
             for (const container of shelf.containers) {
-                const containerCopy = {
-                    container_id: container.container_id,
-                    name: container.name,
-                    size: container.size,
-                    units: container.units,
-                    items: []
-                };
-                for (const item of container.items) {
-                    if (item.name.toLowerCase().includes(query) ||
-                        item.description.toLowerCase().includes(query)) {
-                        containerCopy.items.push(item);
-                    }
-                }
-                if (containerCopy.items.length > 0) {
-                    shelfCopy.containers.push(containerCopy);
+                if (container.name.toLowerCase().includes(query)) {
+                    filteredShelf.containers.push(container);
                 }
             }
             for (const item of shelf.items) {
-                if (item.name.toLowerCase().includes(query) ||
-                    item.description.toLowerCase().includes(query)) {
-                    shelfCopy.items.push(item);
+                if (item.name.toLowerCase().includes(query)) {
+                    filteredShelf.items.push(item);
                 }
             }
-            if (shelfCopy.containers.length > 0 || shelfCopy.items.length > 0) {
-                filteredCloset.shelves.push(shelfCopy);
+            if (filteredShelf.containers.length > 0 || filteredShelf.items.length > 0) {
+                filteredCloset.shelves.push(filteredShelf);
             }
         }
         console.debug(`[handleSearch] \"${query}\":`, filteredCloset);
