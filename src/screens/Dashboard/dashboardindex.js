@@ -325,8 +325,8 @@ class Dashboard extends React.Component {
             {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div key={this.key++}>
-                        {this.state.displayItem? <ItemCard name={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} /> : null}
-                        {this.state.ismodifyingitem? <ModifyItem item={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} /> : null}
+                        {this.state.displayItem? <ItemCard name={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} itemData={this.itemData}/> : null}
+                        {this.state.ismodifyingitem? <ModifyItem item={this.itemData["name"]} count={this.itemData["count"]} type={this.itemData["type"]} exdate={this.itemData["expiration_date"]} id={this.itemData["item_id"]} closetData={this.state.closetData} /> : null}
                         {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfInfo} /> : null}
                         <table id="dashboardtable">
                             <tbody>

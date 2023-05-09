@@ -29,6 +29,7 @@ function ModifyContainer(props) {
 
     async function handleSubmit(event) {
         event.preventDefault();
+        console.log(event.target);
         const response = await fetch(`${config.url}/api/edit-container`, {
             method: "POST",
             headers: {
@@ -42,6 +43,21 @@ function ModifyContainer(props) {
             alert("successfully modified item");
         }
     }
+
+    async function handleDelete(event) {
+        event.preventDefault();
+        console.log(event.target.value);
+        const response = await fetch(`${config.url}/api/delete-container`, {
+            method: "POST",
+            body: new FormData(event.target)
+        })
+        if(response.ok)
+        {
+            window.location.reload();
+            alert("successfully deleted item");
+        }
+    }
+    
     console.log(props.shelves)
     let count = 0;
     return (
@@ -69,8 +85,11 @@ function ModifyContainer(props) {
                 <p>Current shelf: {props.shelf["name"]}</p>
                 <input type="hidden" value={props.id} name="container_id"></input>
                 <button className="button" type="button" onClick={()=>handleButtion()}>Cancel</button>
-                <button className="button" type="button">Delete</button>
                 <input className="button" type="submit" value="Submit Changes" />
+            </form>
+            <form onSubmit={handleDelete}>
+                <input type="hidden" value={props.id} name = "container_id"></input>
+                <input className="button" type="submit" value="Delete" />
             </form>
         </div>
     )
