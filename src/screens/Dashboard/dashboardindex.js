@@ -8,6 +8,11 @@ import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
 import ItemCard from '../../components/itemcard/itemcard.js';
 
+
+function isAlphaNumeric(keyCode) {
+    return (keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90);
+}
+
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
@@ -159,7 +164,7 @@ class Dashboard extends React.Component {
 
     handleDisplayItemUnMount() {
         eventBus.on("cancel display item", (data) => {
-            console.log("HERE")
+            console.log("HERE");
             this.setState(prevState => ({displayItem: false}));
         }
         );
@@ -199,15 +204,21 @@ class Dashboard extends React.Component {
 
     /**
      * Return a copy of closetData that contains only items, containers, and
-     * shelves that contain any attribute that includes the query
+     * shelves whose name includes the query
      * 
      * @param {string} query
      * @returns {DashboardCloset}
      */
     handleSearch(event) {
         const closetData = this.state.closetData;
-        const queryLower = event.target.value.toLowerCase();
-        if (queryLower === "") {
+        const nextChar = isAlphaNumeric(event.keyCode) ? event.key : "";
+        let query = event.target.value + nextChar;
+        query = query.toLowerCase().trim();
+        if (event.key === "Backspace") {
+            query = query.slice(0, -1);
+        }
+        if (query === "") {
+            console.debug(`[handleSearch] \"${query}\":`, this.state.closetDataFull);
             this.setState({ closetData: this.state.closetDataFull });
             return;
         }
@@ -234,8 +245,8 @@ class Dashboard extends React.Component {
                     items: []
                 };
                 for (const item of container.items) {
-                    if (item.name.toLowerCase().includes(queryLower) ||
-                        item.description.toLowerCase().includes(queryLower)) {
+                    if (item.name.toLowerCase().includes(query) ||
+                        item.description.toLowerCase().includes(query)) {
                         containerCopy.items.push(item);
                     }
                 }
@@ -244,8 +255,8 @@ class Dashboard extends React.Component {
                 }
             }
             for (const item of shelf.items) {
-                if (item.name.toLowerCase().includes(queryLower) ||
-                    item.description.toLowerCase().includes(queryLower)) {
+                if (item.name.toLowerCase().includes(query) ||
+                    item.description.toLowerCase().includes(query)) {
                     shelfCopy.items.push(item);
                 }
             }
@@ -253,17 +264,18 @@ class Dashboard extends React.Component {
                 filteredCloset.shelves.push(shelfCopy);
             }
         }
-        console.debug(filteredCloset);
+        console.debug(`[handleSearch] \"${query}\":`, filteredCloset);
         this.setState({ closetData: filteredCloset });
     }
 
     render() {
-        let testArray = ["1", "2", "3"]
-        const shelfdata =this.state.closetData["shelves"]
-        shelfdata && shelfdata.reverse()
+        const shelfdata = this.state.closetData["shelves"];
+        shelfdata && shelfdata.reverse();
+
+        console.log("[Dashboard]", {shelfdata});
 
         let dashboarddata = <div id="tablecontainer">
-                {shelfdata && shelfdata.map((shelf) => {
+            {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div>
                         <table id="dashboardtable">
@@ -278,8 +290,7 @@ class Dashboard extends React.Component {
                                     }
                                     {shelf["containers"] && shelf["containers"].map((container) => {
                                         return (
-
-                                            <td id='container'><button id='container' className='containeritem' onClick={() => this.handleContainer(container)}>{container["name"]}</button></td>
+                                            <td id='container'><button id='container' className='containeritem'>{container["name"]}</button></td>
                                         );
                                     })
                                     }
@@ -292,21 +303,44 @@ class Dashboard extends React.Component {
                         </table>
                     </div>
                 );
-                })}
+            })}
         </div> 
 
         return (
             <div id="dashboard">
                 <DashboardHeader handleSearch={this.handleSearch.bind(this)} />
-                {(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddItemCard closetData={this.state.closetData} /> }
-                {(this.state.isInsertingContainer) && !(this.state.isInsertingItem) && !(this.state.isInsertingShelf) && !(this.state.displayItem) && <AddContainerCard closetData={this.state.closetData} /> }
-                {(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && !(this.state.displayItem) && <AddShelfCard closetData={this.state.closetData} /> }
-                {!(this.state.isInsertingShelf) && !(this.state.isInsertingItem) && !(this.state.isInsertingContainer) && (this.state.displayItem) && <ItemCard />}
+                {
+                    this.state.isInsertingItem &&
+                    !(this.state.isInsertingContainer) &&
+                    !(this.state.isInsertingShelf) &&
+                    !(this.state.displayItem) &&
+                    <AddItemCard closetData={this.state.closetData} />
+                }
+                {
+                    (this.state.isInsertingContainer) &&
+                    !(this.state.isInsertingItem) &&
+                    !(this.state.isInsertingShelf) &&
+                    !(this.state.displayItem) &&
+                    <AddContainerCard closetData={this.state.closetData} />
+                }
+                {
+                    (this.state.isInsertingShelf) &&
+                    !(this.state.isInsertingItem) &&
+                    !(this.state.isInsertingContainer) &&
+                    !(this.state.displayItem) &&
+                    <AddShelfCard closetData={this.state.closetData} />
+                }
+                {
+                    !(this.state.isInsertingShelf) &&
+                    !(this.state.isInsertingItem) &&
+                    !(this.state.isInsertingContainer) &&
+                    (this.state.displayItem) &&
+                    <ItemCard />
+                }
                 {this.state.showingDashboard?
                     <div>
                         <h1>Dashboard</h1>
                         {dashboarddata}
-                        
                     </div>
                     :                    
                     <Container data={this.containerdata} title="hi"/>
