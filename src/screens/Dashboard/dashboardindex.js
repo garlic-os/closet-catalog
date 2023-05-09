@@ -51,7 +51,9 @@ class Dashboard extends React.Component {
             closetData: {},
             closetDataFull: {},
             containerData: {},
-            shelfData: {}
+            shelfData: {},
+            itemData: {},
+            shelfInfo: {},
         };
         this.key = 0;
     }
@@ -205,7 +207,8 @@ class Dashboard extends React.Component {
         );
     }
 
-    handleModifyShelf() {
+    handleModifyShelf(shelf) {
+        this.shelfInfo = shelf;
         eventBus.dispatch("modify shelf", {message: "modify shelf"});
         this.setState(prevState => ({isInsertingContainer:false}));
         this.setState(prevState => ({isInsertingShelf: false}));
@@ -321,7 +324,7 @@ class Dashboard extends React.Component {
                     <div key={this.key++}>
                         {this.state.displayItem? <ItemCard item={this.itemdata} /> : null}
                         {this.state.ismodifyingitem? <ModifyItem item={this.itemdata} /> : null}
-                        {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfdata} /> : null}
+                        {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfInfo} /> : null}
                         <table id="dashboardtable">
                             <tbody>
                                 {

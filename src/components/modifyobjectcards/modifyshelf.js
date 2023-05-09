@@ -28,16 +28,19 @@ function ModifyContainer(props) {
 
     return (
         <div id="modifycard">
-            <h1>Modify <br></br>{props.name}</h1>
+            {console.log(props)}
+            <h1>Modify <br></br>{props["shelf"].name}</h1>
             <form onSubmit={props.handleSubmit}>
                 {
                     items.map(({ name, slug, type }) =>
                         <div>
                             <b>{name}: </b>
                             <input name={slug} type={type}></input>
-                            <br/><br/>
+                            <br/><br/>                            
                         </div>
                 )}
+                {/* Below is the shelf ID */}
+                <p>Shelf ID:{props["shelf"]["shelf_id"]}</p>
             </form>
             <button className="button" type="button" onClick={() =>handleButton()}>Cancel</button>
             <button className="button" type="button">Delete</button>
