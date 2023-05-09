@@ -157,7 +157,7 @@ class Dashboard extends React.Component {
 
     handleDisplayItemUnMount() {
         eventBus.on("cancel display item", (data) => {
-            console.log("HERE")
+            console.log("HERE");
             this.setState(prevState => ({displayItem: false}));
         }
         );
