@@ -3,13 +3,12 @@ import "./index.css";
 import eventBus from '../../EventBus/eventbus.js'
 
 class ToggleBar extends React.Component {
-
     constructor() {
-        super()
-        this.state = {isInDashboard: true}
-        this.toggleBarCommandsDidMount()
-        this.handleBackButton()
-        this.showingContainer()
+        super();
+        this.state = {isInDashboard: true};
+        this.toggleBarCommandsDidMount();
+        this.handleBackButton();
+        this.showingContainer();
     }
 
     handleButton = (type) => {
@@ -57,7 +56,6 @@ class ToggleBar extends React.Component {
     }
 
     render() {
-        
         return (
             <div id="togglebar">
                 {this.state.isInDashboard===true?
@@ -86,6 +84,7 @@ class ToggleBar extends React.Component {
 class DashboardHeader extends React.Component {
     constructor(props) {
         super(props);
+        this.props = props;
         this.state = {isInDashboard: true, username: ""};
     }
 
@@ -108,7 +107,7 @@ class DashboardHeader extends React.Component {
             const data = await response.json();
             alert(data.error);
         }
-    }    
+    }
 
     render() {
         return (
@@ -124,8 +123,9 @@ class DashboardHeader extends React.Component {
                             <td id="middle"><h1>{this.state.username}'s Closet</h1></td>
                             <td id="right">
                                 <div>
-                                    <input type="text"></input>
-                                    <button type="submit">Search</button>
+                                    <input type="text"
+                                           placeholder="Search"
+                                           onKeyDown={this.props.handleSearch}></input>
                                 </div>
                             </td>
                         </tr>

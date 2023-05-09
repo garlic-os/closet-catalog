@@ -62,7 +62,7 @@ app.post("/api/register", upload.none(), async (req, res) => {
 		FROM closets
 		Where user_id = ?
 	`).get(user_id);
-	console.log(closetID);
+	console.log("[POST register]", {closetID});
 
 	db.prepare(`
 		INSERT INTO Owns (user_id, closet_id)
@@ -185,12 +185,11 @@ app.get("/api/closets", (req, res) => {
  * @returns {DashboardCloset}
  */
 app.get("/api/closet/:closetID", (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
-	console.log("test");
-	const closetID = req.params.closetID;
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
+	const closetID = parseInt(req.params.closetID);
 	const closetName = db.prepare(`
 		SELECT name
 		FROM closets
@@ -205,7 +204,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 			Where closet_id = ?
 			)
 	`).all(closetID);
-	console.log(shelves);
+	console.log("[GET closet]", {shelves});
 	for (const shelf of shelves) {
 		shelf.containers = db.prepare(`
 			SELECT container_id, name, size, units
@@ -256,7 +255,7 @@ app.get("/api/closet/:closetID", (req, res) => {
 		shelves,
 		containers
 	};
-	console.log(closet);
+	console.log("[GET closet]", {closet});
 	res.send(closet);
 });
 
@@ -317,21 +316,20 @@ app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
 		return;
 	}
 	const closetID = req.params.closetID;
-	console.log(closetID);
+	console.log("[POST add-shelf]", {closetID});
 	const { name, size, units } = req.body;
 	//add shelf into shelves table
 	db.prepare(`
 		INSERT INTO shelves (name, size, units)
 		VALUES (?, ?, ?)
 	`).run(name, size, units);
-	console.log("test");
 	//add shelf to user's closet
 	const shelf = db.prepare(`
 		SELECT shelf_id
 		FROM shelves
 		WHERE name = ? AND size = ? AND units = ?
 	`).get(name, size, units);
-	console.log(shelf);
+	console.log("[POST add-shelf]", {shelf});
 	db.prepare(`
 		INSERT INTO belongsTo (closet_id, shelf_id)
 		VALUES (?, ?)
@@ -342,10 +340,10 @@ app.post("/api/add-shelf/:closetID", upload.none(), (req, res) => {
 
 
 app.post("/api/delete-shelf", upload.none(), (req, res) => {
-	// if (!validateToken(req.headers.authorization)) {
-	// 	res.status(401).json({ error: "Invalid session token" });
-	// 	return;
-	// }
+	if (!validateToken(req.headers.authorization)) {
+		res.status(401).json({ error: "Invalid session token" });
+		return;
+	}
 	const shelf_id = req.body.shelf_id;
 	const stmt = db.prepare(`
 		SELECT *
@@ -369,8 +367,84 @@ app.post("/api/delete-shelf", upload.none(), (req, res) => {
 	}
 });
 
-app.post("/api/edit-item", upload.none(), (req, res) =>{
+app.post("/api/edit-item", upload.single("photo"), (req, res) =>{
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
 	
+	const photoURL = req?.file?.path;
+
+	const {
+		itemTypeName,
+		initialCount,
+		description,
+		name,
+		expirationDate,
+		item_id,
+		container_id,
+		shelf_id,
+	} = req.body;
+	//Update Item properties
+	db.prepare(`
+		UPDATE items
+		SET type = ?, count = ?, description = ?, photo_url = ?, name = ?, expiration_date = ?
+		WHERE item_id = ?
+	`).run(itemTypeName, initialCount, description, photoURL, name, expirationDate, item_id);
+	
+	//Update Items location with given shelf and container
+	db.prepare(`
+		UPDATE Contains_Item
+		SET container_id = ?, shelf_id = ?
+		WHERE item_id = ?
+	`).run(container_id, shelf_id, item_id);
+
+	res.sendStatus(200);
+
+});
+
+app.post("/api/edit-shelf", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const { name, size, units, shelf_id } = req.body;
+
+	db.prepare(`
+		UPDATE shelves
+		SET name = ?, size = ?, units = ?
+		WHERE shelf_id = ?
+	`).run(name, size, units, shelf_id);
+
+	res.sendStatus(200);
+});
+
+app.post("/api/edit-container", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const { name, size, units, shelf_id, container_id } = req.body;
+
+	db.prepare(`
+		UPDATE containers
+		SET name = ?, size = ?, units = ?
+		WHERE container_id = ?
+	`).run(name, size, units, container_id);
+
+	//if they provide a new shelf then move the container to that shelf in the db
+	if(!(shelf_id === undefined))
+	{
+		db.prepare(`
+			UPDATE belongsTo
+			SET shelf_id = ?
+			WHERE container_id = ?
+		`).run(shelf_id, container_id);
+	}
+
+	res.sendStatus(200);
 });
 
 app.post("/api/delete-container", upload.none(), (req, res) => {
@@ -413,7 +487,7 @@ app.post("/api/delete-item", upload.none(), (req, res) => {
 		FROM items
 		WHERE item_id = ?
 	`);
-	console.log(item_id);
+	console.log("[POST delete-item]", {item_id});
 	
 	const result = stmt.get(item_id);
 	if(result === undefined)
@@ -446,15 +520,90 @@ app.post("/api/add-container/:closetID", upload.none(), (req, res) => {
 		WHERE name = ? AND size = ? AND units = ?
 	`).get(name, size, units);
 
-	console.log(closetID);
-	console.log(container.container_id);
-	console.log(shelf_id);
+	console.log("[POST add-container]", {closetID, container, shelf_id});
 	db.prepare(`
 		INSERT INTO belongsTo (closet_id, container_id, shelf_id)
 		VALUES (?, ?, ?)
 	`).run(closetID, container.container_id, shelf_id);
 
 	res.sendStatus(201);
+});
+
+app.get("/api/total-items/:closetID", upload.none(), (req, res) => {
+	// if (!validateToken(req.headers.authorization)) {
+	// 	res.status(401).json({ error: "Invalid session token" });
+	// 	return;
+	// }
+
+	const closetID = req.params.closetID;
+
+	const shelves = db.prepare(`
+		SELECT shelf_id
+		FROM shelves
+		WHERE EXISTS (
+			SELECT shelf_id
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	let shelfCount;
+	let total = 0;
+	for (const shelf of shelves)
+	{
+		shelfCount = db.prepare(`
+			SELECT COUNT(item_id)
+			FROM items
+			WHERE item_id IN (
+				SELECT item_id
+				FROM Contains_Item
+				WHERE shelf_id = ?
+			)
+		`).all(shelf.shelf_id);
+		total += shelfCount[0]["COUNT(item_id)"];
+	}
+	let response = {
+		total: total
+	};
+	res.send(response);
+})
+
+app.get("/api/total-containers/:closetID", upload.none(), (req, res) => {
+	const closetID = req.params.closetID;
+	const containers = db.prepare(`
+		SELECT COUNT(container_id)
+		FROM containers
+		WHERE EXISTS (
+			SELECT container_id  
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	const total = containers[0]["COUNT(container_id)"]- 1;//subtracting for the "no container" container
+	let response = {
+		total: total
+	};
+	res.send(response);
+});
+
+app.get("/api/total-shelves/:closetID", upload.none(), (req, res) => {
+	const closetID = req.params.closetID;
+	const shelves = db.prepare(`
+		SELECT COUNT(shelf_id)
+		FROM shelves
+		WHERE EXISTS (
+			SELECT shelf_id  
+			FROM belongsTo
+			WHERE closet_id = ?
+		)
+	`).all(closetID);
+
+	const total = shelves[0]["COUNT(shelf_id)"] - 1;//subtracting for the "floor" shelf
+	let response = {
+		total: total
+	};
+	res.send(response);
 });
 
 app.get("/api/search", (req, res) => {
@@ -519,4 +668,3 @@ function validateToken(token) {
 		});
 	}
 })();
-
