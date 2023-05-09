@@ -291,7 +291,7 @@ class Dashboard extends React.Component {
                                     </tr>
                                 }
                                 <tr id={shelf["name"]} className='shelf'>
-                                    <p>{shelf["name"]}</p>
+                                    {shelf["name"]}
                                 </tr>
                             </tbody>
                         </table>
