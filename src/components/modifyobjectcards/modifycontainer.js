@@ -20,8 +20,13 @@ function ModifyContainer(props) {
             type: "text"
         }
     ]
+
+    const handleButton = () => {
+        eventBus.dispatch("cancel modify container");
+    }
+
     return (
-        <div id="modifycontainer">
+        <div id="modifycard">
             <h1>Modify <br></br>{props.name}</h1>
             <form onSubmit={props.handleSubmit}>
                 {
@@ -34,7 +39,7 @@ function ModifyContainer(props) {
                     )
                 }
                 <p>ID: {props.id}</p>
-                <button className="button" type="button">Cancel</button>
+                <button className="button" type="button" onClick={() =>handleButton()}>Cancel</button>
                 <button className="button" type="button">Delete</button>
                 <input className="button" type="submit" value="Submit Changes" />
             </form>

@@ -10,7 +10,9 @@ const ItemCard = (props) => {
     }
 
     const dispatchModifyItem = () => {
+        console.log("dispatching modify item");
         eventBus.dispatch("modify item", {message: "modify item"});
+        eventBus.dispatch("cancel display item", {message: "cancel display item"});
     }
 
     return (

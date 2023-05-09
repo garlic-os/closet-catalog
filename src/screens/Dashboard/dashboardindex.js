@@ -7,6 +7,8 @@ import AddContainerCard from '../../components/addobjectcards/addcontainercard.j
 import AddShelfCard from '../../components/addobjectcards/addshelfcard.js';
 import Container from '../ContainerView/containerview.js';
 import ItemCard from '../../components/itemcard/itemcard.js';
+import ModifyItem from '../../components/modifyobjectcards/modifyitem.js';
+import ModifyShelf from '../../components/modifyobjectcards/modifyshelf.js';
 
 
 function isAlphaNumeric(keyCode) {
@@ -31,7 +33,10 @@ class Dashboard extends React.Component {
         this.dispatchDisplayItem()
         this.handleDisplayItem()
         this.handleDisplayItemUnMount()
-        this.handleEditing()
+        this.handleModifyItem()
+        this.handleModifyItemDidMount()
+        this.handleModifyShelf()
+        this.handleModifyShelfDidMount()
         this.state = {
             isInsertingItem: false,
             isInsertingContainer: false,
@@ -41,6 +46,8 @@ class Dashboard extends React.Component {
             showingShelves: false,
             showingDashboard: true,
             displayItem: false,
+            ismodifyingitem: false,
+            ismodifyingshelf: false,
             closetData: {},
             closetDataFull: {},
             containerData: {}
@@ -158,8 +165,8 @@ class Dashboard extends React.Component {
 
     handleDisplayItem() {
         eventBus.on("display item", (data) => {
+            this.setState(prevState => ({isInsertingContainer:false}));
             this.setState(prevState => ({isInsertingShelf: false}));
-            this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingItem:false}));
             this.setState(prevState => ({displayItem: true}));
         }
@@ -174,23 +181,39 @@ class Dashboard extends React.Component {
         );
     }
 
-    handleEditing() {
+    handleModifyItem() {
         eventBus.on("modify item", (data) => {
-            this.setState(prevState => ({isEditing: true}));
+            this.setState(prevState => ({isInsertingContainer:false}));
             this.setState(prevState => ({isInsertingShelf: false}));
-            this.setState(prevState => ({isInsertingContainer: false}));
             this.setState(prevState => ({isInsertingItem:false}));
             this.setState(prevState => ({displayItem: false}));
-        }        
-        )
-    }
-
-    cancelEdit() {
-        eventBus.on("cancel modify item", (data) => {
-            this.setState(prevState => ({isEditing: false}));
+            this.setState(prevState => ({ismodifyingitem: true}));
         }
         );
-    }    
+    }
+
+    handleModifyItemDidMount() {
+        eventBus.on("cancel modify item", (data) => {
+            this.setState(prevState => ({ismodifyingitem: false}));            
+        }
+        );
+    }
+
+    handleModifyShelf() {
+        eventBus.dispatch("modify shelf", {message: "modify shelf"});
+        this.setState(prevState => ({isInsertingContainer:false}));
+        this.setState(prevState => ({isInsertingShelf: false}));
+        this.setState(prevState => ({isInsertingItem:false}));
+        this.setState(prevState => ({displayItem: false}));
+        this.setState(prevState => ({ismodifyingshelf: true}));
+    }
+
+    handleModifyShelfDidMount() {
+        eventBus.on("cancel modify shelf", (data) => {
+            this.setState(prevState => ({ismodifyingshelf: false}));            
+        }
+        );
+    }
 
     async getClosetData() {
         let closets;
@@ -223,6 +246,7 @@ class Dashboard extends React.Component {
             closetDataFull: closetData
         });
     }
+
 
     /**
      * Return a copy of closetData that contains only items, containers, and
@@ -289,6 +313,9 @@ class Dashboard extends React.Component {
             {shelfdata && shelfdata.map((shelf) => {
                 return (
                     <div key={this.key++}>
+                        {this.state.displayItem? <ItemCard item={this.itemdata} /> : null}
+                        {this.state.ismodifyingitem? <ModifyItem item={this.itemdata} /> : null}
+                        {this.state.ismodifyingshelf? <ModifyShelf shelf={this.shelfdata} /> : null}
                         <table id="dashboardtable">
                             <tbody>
                                 {
@@ -296,7 +323,7 @@ class Dashboard extends React.Component {
                                     ? <tr id="emptyshelf"><br></br><br></br>empty</tr>
                                     : <tr id='containersanditems'> {
                                         shelf["items"] && shelf["items"].map((item) =>
-                                            <td id='item' key={this.key++}><button id='item' className='containeritem'>{item["name"]}</button></td>
+                                            <td id='item' key={this.key++}><button id='item' className='containeritem' onClick={() => this.dispatchDisplayItem()}>{item["name"]}</button></td>
                                         )
                                     }
                                     {
@@ -307,7 +334,8 @@ class Dashboard extends React.Component {
                                     </tr>
                                 }
                                 <tr id={shelf["name"]} className='shelf'>
-                                    {shelf["name"]}
+                                    <td>{shelf["name"]}</td>
+                                    <td><button id='shelf' className='containeritem' onClick={() => this.handleModifyShelf(shelf)}>edit</button></td>
                                 </tr>
                             </tbody>
                         </table>
