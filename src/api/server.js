@@ -558,7 +558,7 @@ app.get("/api/total-items/:closetID", upload.none(), (req, res) => {
 	const shelves = db.prepare(`
 		SELECT shelf_id
 		FROM shelves
-		WHERE EXISTS (
+		WHERE shelf_id IN (
 			SELECT shelf_id
 			FROM belongsTo
 			WHERE closet_id = ?
@@ -591,7 +591,7 @@ app.get("/api/total-containers/:closetID", upload.none(), (req, res) => {
 	const containers = db.prepare(`
 		SELECT COUNT(container_id)
 		FROM containers
-		WHERE EXISTS (
+		WHERE container_id IN (
 			SELECT container_id  
 			FROM belongsTo
 			WHERE closet_id = ?
@@ -610,7 +610,7 @@ app.get("/api/total-shelves/:closetID", upload.none(), (req, res) => {
 	const shelves = db.prepare(`
 		SELECT COUNT(shelf_id)
 		FROM shelves
-		WHERE EXISTS (
+		WHERE shelf_id IN (
 			SELECT shelf_id  
 			FROM belongsTo
 			WHERE closet_id = ?
