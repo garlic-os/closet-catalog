@@ -33,20 +33,19 @@ class Dashboard extends React.Component {
         this.handleDisplayItem()
         this.handleDisplayItemUnMount()
         this.state = {
-                        isInsertingItem: false,
-                        isInsertingContainer: false,
-                        isInsertingShelf: false,
-                        isEditing: false,
-                        showingItems: false,
-                        showingContainers: false,
-                        showingShelves: false,
-                        showingDashboard: true,
-                        displayItem: false,
-                        closetData: {},
-                        closetDataFull: {},
-                        containerData: {}
-                    };
-        
+            isInsertingItem: false,
+            isInsertingContainer: false,
+            isInsertingShelf: false,
+            showingItems: false,
+            showingContainers: false,
+            showingShelves: false,
+            showingDashboard: true,
+            displayItem: false,
+            closetData: {},
+            closetDataFull: {},
+            containerData: {}
+        };
+        this.key = 0;
     }
 
     // Adding and Canceling for Item
@@ -225,7 +224,7 @@ class Dashboard extends React.Component {
             query = query.slice(0, -1);
         }
         if (query === "") {
-            console.debug(`[handleSearch] \"${query}\":`, this.state.closetDataFull);
+            console.debug(`[handleSearch] "${query}":`, this.state.closetDataFull);
             this.setState({ closetData: this.state.closetDataFull });
             return;
         }
@@ -259,7 +258,7 @@ class Dashboard extends React.Component {
                 filteredCloset.shelves.push(filteredShelf);
             }
         }
-        console.debug(`[handleSearch] \"${query}\":`, filteredCloset);
+        console.debug(`[handleSearch] "${query}":`, filteredCloset);
         this.setState({ closetData: filteredCloset });
     }
 
@@ -350,7 +349,7 @@ class Dashboard extends React.Component {
                         {dashboarddata}
                     </div>
                     :                    
-                    <Container data={this.containerdata}/>
+                    <Container data={this.containerdata} />
                 }
             </div>
         )
