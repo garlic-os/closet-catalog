@@ -8,7 +8,7 @@ async function addShelf(event) {
     event.preventDefault(); // Keep the page from reloading
     let closets;
         {
-            const response = await fetch('http://localhost:3001/api/closets', {
+            const response = await fetch(`${config.url}/api/closets`, {
                 headers:{'authorization': localStorage.getItem('token')}
             });
             if (response.ok) {

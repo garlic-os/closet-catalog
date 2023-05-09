@@ -65,7 +65,7 @@ class ToggleBar extends React.Component {
     async getTotalItems() {
         let closets;
         {
-            const response = await fetch('http://localhost:3001/api/closets', {
+            const response = await fetch(`${config.url}/api/closets`, {
                 headers:{'authorization': localStorage.getItem('token')}
             });
             if (response.ok) {
@@ -91,7 +91,7 @@ class ToggleBar extends React.Component {
     async getTotalShelves() {
         let closets;
         {
-            const response = await fetch('http://localhost:3001/api/closets', {
+            const response = await fetch(`${config.url}/api/closets`, {
                 headers:{'authorization': localStorage.getItem('token')}
             });
             if (response.ok) {
@@ -110,14 +110,14 @@ class ToggleBar extends React.Component {
         })
         if(response.ok)
         {
-            return await (await response).json();
+            return await response.json();
         }
     }
 
     async getTotalContainers() {
         let closets;
         {
-            const response = await fetch('http://localhost:3001/api/closets', {
+            const response = await fetch(`${config.url}/api/closets`, {
                 headers:{'authorization': localStorage.getItem('token')}
             });
             if (response.ok) {
@@ -199,7 +199,7 @@ class DashboardHeader extends React.Component {
     async getUsername() {
         // Sending a get request to the api/username endpoint and passing in session token
         // so that the server knows who it's talking to, and the server will give back the user
-        const response = await fetch('http://localhost:3001/api/username', {
+        const response = await fetch(`${config.url}/api/username`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {

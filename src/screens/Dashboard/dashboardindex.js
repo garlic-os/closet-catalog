@@ -9,6 +9,7 @@ import Container from '../ContainerView/containerview.js';
 import ItemCard from '../../components/itemcard/itemcard.js';
 import ModifyItem from '../../components/modifyobjectcards/modifyitem.js';
 import ModifyShelf from '../../components/modifyobjectcards/modifyshelf.js';
+import * as config from "../../config.js";
 
 
 function isAlphaNumeric(keyCode) {
@@ -205,7 +206,7 @@ class Dashboard extends React.Component {
 
     handleModifyItemDidMount() {
         eventBus.on("cancel modify item", (data) => {
-            this.setState(prevState => ({ismodifyingitem: false}));            
+            this.setState(prevState => ({ismodifyingitem: false}));
         }
         );
     }
@@ -222,7 +223,7 @@ class Dashboard extends React.Component {
 
     handleModifyShelfDidMount() {
         eventBus.on("cancel modify shelf", (data) => {
-            this.setState(prevState => ({ismodifyingshelf: false}));            
+            this.setState(prevState => ({ismodifyingshelf: false}));
         }
         );
     }
@@ -230,7 +231,7 @@ class Dashboard extends React.Component {
     async getClosetData() {
         let closets;
         {
-            const response = await fetch('http://localhost:3001/api/closets', {
+            const response = await fetch(`${config.url}/api/closets`, {
                 headers:{'authorization': localStorage.getItem('token')}
             });
             if (response.ok) {
@@ -240,7 +241,7 @@ class Dashboard extends React.Component {
                 alert(data.error);
             }
         }
-        const response = await fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
+        const response = await fetch(`${config.url}/api/closet/${closets[0].closet_id}`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {

@@ -22,7 +22,7 @@ async function addContainer(event) {
     event.preventDefault();  // Keep the page from reloading
     let closets;
     {
-        const response = await fetch('http://localhost:3001/api/closets', {
+        const response = await fetch(`${config.url}/api/closets`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {
@@ -50,7 +50,7 @@ let id;
 async function getShelfData() {
     let closets;
     {
-        const response = await fetch('http://localhost:3001/api/closets', {
+        const response = await fetch(`${config.url}/api/closets`, {
             headers:{'authorization': localStorage.getItem('token')}
         });
         if (response.ok) {
@@ -60,7 +60,7 @@ async function getShelfData() {
             alert(data.error);
         }
     }
-    const response = fetch(`http://localhost:3001/api/closet/${closets[0].closet_id}`, {
+    const response = fetch(`${config.url}/api/closet/${closets[0].closet_id}`, {
         method: "GET",
         headers:{'authorization': localStorage.getItem('token')}
     });
