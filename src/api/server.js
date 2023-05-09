@@ -383,8 +383,7 @@ app.post("/api/edit-item", upload.single("photo"), (req, res) =>{
 	// 	return;
 	// }
 	
-	const photoURL = req?.file?.path;
-
+	const photoURL = req?.file?.path.replace("public", "") ?? null;
 	const {
 		itemTypeName,
 		initialCount,
