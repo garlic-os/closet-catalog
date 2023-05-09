@@ -173,7 +173,7 @@ class Dashboard extends React.Component {
 
     handleEditing() {
         eventBus.dispatch("is editing", {message: "is editing"});
-        this.setState(prevState => {isEditing = true});
+        this.setState(prevState => {this.state.isEditing = true});
     }
 
     async getClosetData() {
